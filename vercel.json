@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["sin1"],
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{*.html,map_picker.js}",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index?__request_path=/api/:path*" },
+    { "source": "/", "destination": "/api/index?__request_path=/" },
+    { "source": "/login", "destination": "/api/index?__request_path=/login" },
+    { "source": "/setup", "destination": "/api/index?__request_path=/setup" },
+    { "source": "/screening", "destination": "/api/index?__request_path=/screening" },
+    { "source": "/nurse", "destination": "/api/index?__request_path=/nurse" },
+    { "source": "/community", "destination": "/api/index?__request_path=/community" },
+    { "source": "/dispatch", "destination": "/api/index?__request_path=/dispatch" },
+    { "source": "/telemedicine", "destination": "/api/index?__request_path=/telemedicine" },
+    { "source": "/training", "destination": "/api/index?__request_path=/training" },
+    { "source": "/patient", "destination": "/api/index?__request_path=/patient" },
+    { "source": "/map_picker.js", "destination": "/api/index?__request_path=/map_picker.js" }
+  ]
+}

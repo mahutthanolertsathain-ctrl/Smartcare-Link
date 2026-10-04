@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บอร์ดเจ้าหน้าที่ | ระบบคัดกรองผู้ป่วย</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');body{font-family:'Sarabun',sans-serif}</style>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+  <header class="bg-slate-900 text-white shadow-lg">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
+      <div><p class="text-xs font-semibold uppercase tracking-[.2em] text-blue-300">General Triage · Staff</p><h1 class="text-xl font-bold sm:text-2xl">บอร์ดคิวและแจ้งเหตุ</h1></div>
+      <nav class="flex flex-wrap gap-2 text-sm"><a href="/" class="rounded-lg border border-white/20 px-3 py-2 font-bold hover:bg-white/10">← เลือกหน้าใช้งาน</a><a href="/screening" class="rounded-lg border border-white/20 px-3 py-2 hover:bg-white/10">รับคัดกรอง / จัดคิว</a><a href="/community" class="rounded-lg border border-white/20 px-3 py-2 hover:bg-white/10">ทะเบียนและติดตาม</a><a href="/dispatch" class="rounded-lg border border-white/20 px-3 py-2 hover:bg-white/10">ประสาน SOS</a></nav>
+    </div>
+  </header>
+  <main class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div><h2 class="text-lg font-bold">ภาพรวมวันนี้</h2><p class="text-sm text-slate-500">อัปเดตอัตโนมัติทุก 5 วินาที · <span id="updated-at">กำลังโหลด…</span></p></div>
+      <button onclick="refreshAll()" class="rounded-lg bg-white px-4 py-2 text-sm font-semibold shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">↻ รีเฟรช</button>
+    </div>
+    <div id="connection-error" class="hidden rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">เชื่อมต่อระบบไม่ได้ กรุณาตรวจสอบว่า API ทำงานอยู่</div>
+    <section class="grid gap-4 sm:grid-cols-3">
+      <article class="rounded-2xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">รอเรียกคิว</p><p id="waiting-count" class="mt-1 text-3xl font-extrabold">—</p></article>
+      <article class="rounded-2xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">กำลังรับบริการ</p><p id="active-count" class="mt-1 text-3xl font-extrabold text-blue-700">—</p></article>
+      <article class="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm"><p class="text-sm font-semibold text-red-700">เหตุที่รอเจ้าหน้าที่รับทราบ</p><p id="alert-count" class="mt-1 text-3xl font-extrabold text-red-700">—</p></article>
+    </section>
+    <section class="rounded-2xl border border-red-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-red-100 px-5 py-4"><div><h2 class="font-bold text-red-800">🚨 แจ้งเหตุฉุกเฉิน</h2><p class="text-xs text-slate-500">ติดต่อผู้ป่วยโดยตรงเมื่อจำเป็น และรับทราบเหตุหลังตรวจสอบแล้ว</p></div><span class="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">LIVE</span></div>
+      <div id="alerts" class="divide-y divide-slate-100"><p class="p-5 text-sm text-slate-500">กำลังโหลดรายการ…</p></div>
+    </section>
+    <section class="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div class="flex flex-wrap items-end justify-between gap-3 border-b border-slate-100 px-5 py-4"><div><h2 class="font-bold">คิวผู้ป่วย</h2><p class="text-xs text-slate-500">ลำดับและเวลารอเป็นข้อมูลประกอบ เจ้าหน้าที่เป็นผู้กำหนดการดูแลจริง</p></div><label class="flex items-center gap-2 text-sm text-slate-600"><input id="show-completed" type="checkbox" onchange="loadQueue()">แสดงคิวที่เสร็จแล้ว</label></div>
+      <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left text-sm"><thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-5 py-3">คิว</th><th class="px-5 py-3">HN</th><th class="px-5 py-3">อาการหลัก</th><th class="px-5 py-3">ระดับจากแบบประเมิน</th><th class="px-5 py-3">เวลาโดยประมาณ</th><th class="px-5 py-3">สถานะ / จัดการ</th></tr></thead><tbody id="queue-rows" class="divide-y divide-slate-100"><tr><td colspan="6" class="px-5 py-8 text-center text-slate-500">กำลังโหลดรายการ…</td></tr></tbody></table></div>
+    </section>
+    <p class="rounded-xl bg-amber-50 p-4 text-xs leading-6 text-amber-900">ระบบนี้เป็นต้นแบบสำหรับบันทึกข้อมูลและจัดคิว ไม่ใช่เครื่องมือวินิจฉัยหรือแทนการคัดกรองโดยบุคลากรทางการแพทย์ หากมีเหตุฉุกเฉินนอกโรงพยาบาล โทร 1669</p>
+  </main>
+<script>
+const API = '/api/v1';
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const statusNames = {waiting:'รอเรียก',calling:'เรียกแล้ว',in_progress:'กำลังตรวจ',done:'เสร็จแล้ว',no_show:'ไม่พบตัว',cancelled:'ยกเลิก',emergency:'ฉุกเฉิน'};
+const statusColors = {waiting:'bg-blue-50 text-blue-700',calling:'bg-violet-50 text-violet-700',in_progress:'bg-amber-50 text-amber-800',done:'bg-emerald-50 text-emerald-700',no_show:'bg-slate-100 text-slate-600',cancelled:'bg-slate-100 text-slate-500'};
+const levelColors = {Green:'bg-emerald-50 text-emerald-700',Yellow:'bg-amber-50 text-amber-800',Red:'bg-red-50 text-red-700'};
+function maskedId(id){const value=String(id||'');return value.length>4?'••••'+value.slice(-4):value||'ไม่ระบุ'}
+function thaiTime(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(+date)?esc(value):date.toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}
+async function loadQueue(){
+  try{
+    const include=document.getElementById('show-completed').checked;
+    const res=await fetch(`${API}/queue?include_completed=${include}`);if(!res.ok)throw Error('queue');
+    const {items}=await res.json();const visible=items.filter(x=>x.triage_level!=='Red');
+    document.getElementById('waiting-count').textContent=visible.filter(x=>x.status==='waiting').length;
+    document.getElementById('active-count').textContent=visible.filter(x=>['calling','in_progress'].includes(x.status)).length;
+    document.getElementById('queue-rows').innerHTML=visible.length?visible.map(x=>`<tr>
+      <td class="whitespace-nowrap px-5 py-4 font-extrabold text-slate-900">${esc(x.queue_number||'—')}</td>
+      <td class="whitespace-nowrap px-5 py-4 font-mono text-slate-600">${esc(maskedId(x.patient_id))}</td>
+      <td class="max-w-xs px-5 py-4"><div class="font-medium">${esc(x.symptom_name)}</div><div class="text-xs text-slate-500">${esc(x.main_category)}</div></td>
+      <td class="px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-bold ${levelColors[x.triage_level]||'bg-slate-100'}">${esc(x.triage_level)}</span></td>
+      <td class="whitespace-nowrap px-5 py-4">${esc(x.estimated_time||'—')} น.</td>
+      <td class="px-5 py-4"><div class="flex flex-wrap items-center gap-2"><span class="rounded-full px-2.5 py-1 text-xs font-semibold ${statusColors[x.status]||'bg-slate-100'}">${statusNames[x.status]||esc(x.status)}</span>${controls(x)}</div></td>
+    </tr>`).join(''):'<tr><td colspan="6" class="px-5 py-10 text-center text-slate-500">ยังไม่มีคิว</td></tr>';
+    document.getElementById('connection-error').classList.add('hidden');
+  }catch(e){document.getElementById('connection-error').classList.remove('hidden')}
+}
+function controls(x){if(['done','cancelled'].includes(x.status))return '';
+  const opts=x.status==='waiting'?[['calling','เรียกคิว'],['no_show','ไม่พบตัว']]:x.status==='calling'?[['in_progress','เริ่มตรวจ'],['waiting','เรียกภายหลัง'],['no_show','ไม่พบตัว']]:[['done','เสร็จสิ้น']];
+  return opts.map(([status,label])=>`<button onclick="changeStatus(${x.id},'${status}')" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-50">${label}</button>`).join('')+`<a href="/community?patient_id=${encodeURIComponent(x.patient_id||'')}" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold">เวชระเบียน</a><button onclick="startCall(this.dataset.hn)" data-hn="${esc(x.patient_id||'')}" class="rounded-lg border border-blue-200 px-2.5 py-1.5 text-xs font-semibold text-blue-800">วิดีโอคอล</button>`}
+async function startCall(patientId){try{const d=await fetch(`${API}/calls`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patient_id:patientId,created_by:'รพ.สต.'})}).then(r=>r.json());if(!d.code)throw Error(d.detail||'เปิดห้องไม่สำเร็จ');window.open(`/telemedicine?code=${d.code}&role=staff&patient_id=${encodeURIComponent(patientId)}`,'_blank','noopener')}catch(e){alert('เปิดห้องวิดีโอไม่ได้: '+e.message)}}
+async function changeStatus(id,status){try{const res=await fetch(`${API}/queue/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});if(!res.ok)throw Error();await loadQueue()}catch(e){alert('อัปเดตสถานะไม่สำเร็จ กรุณาลองอีกครั้ง')}}
+async function loadAlerts(){try{const res=await fetch(`${API}/emergencies`);if(!res.ok)throw Error();const {items}=await res.json();document.getElementById('alert-count').textContent=items.length;
+  document.getElementById('alerts').innerHTML=items.length?items.map(a=>`<article class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div><div class="flex items-center gap-2"><span class="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500"></span><h3 class="font-bold text-red-800">${esc(a.alert_type)}</h3></div><p class="mt-1 text-sm text-slate-600">${esc(a.details||'ไม่มีรายละเอียด')} · HN ${esc(maskedId(a.patient_id))}</p><p class="mt-1 text-xs text-slate-400">รับแจ้ง ${thaiTime(a.created_at)}${a.latitude!=null?' · มีพิกัด GPS':''}</p><a href="/dispatch" class="mt-2 inline-block text-sm font-semibold text-blue-700 underline">ดูตำแหน่งและประสานหน่วย</a></div><button onclick="acknowledge(${a.id})" class="shrink-0 rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">รับทราบเหตุ</button></article>`).join(''):'<p class="p-5 text-sm text-slate-500">ไม่มีเหตุที่รอรับทราบ</p>';
+}catch(e){document.getElementById('connection-error').classList.remove('hidden')}}
+async function acknowledge(id){try{const res=await fetch(`${API}/emergencies/${id}`,{method:'PATCH'});if(!res.ok)throw Error();await loadAlerts()}catch(e){alert('รับทราบเหตุไม่สำเร็จ กรุณาลองอีกครั้ง')}}
+async function refreshAll(){await Promise.all([loadQueue(),loadAlerts()]);document.getElementById('updated-at').textContent=new Date().toLocaleTimeString('th-TH')}
+refreshAll();setInterval(refreshAll,5000);
+</script>
+</body></html>

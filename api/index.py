@@ -12,6 +12,12 @@ class handler(TriageHandler):
         original_path = query.pop("__request_path", [None])[0]
         if not original_path or not original_path.startswith("/"):
             return
+        # Vercel adds the wildcard rewrite parameter named path to the function query.
+        # Remove it when it duplicates the API path already restored above, so exact
+        # route checks in POST handlers keep matching.
+        route_suffix = original_path[len("/api/"):] if original_path.startswith("/api/") else None
+        if route_suffix and query.get("path", [None])[0] == route_suffix:
+            query.pop("path", None)
         original_query = urlencode(query, doseq=True)
         self.path = original_path + ("?" + original_query if original_query else "")
 

@@ -1,0 +1,4 @@
+triage.db
+__pycache__
+*.py[cod]
+POST Request.json

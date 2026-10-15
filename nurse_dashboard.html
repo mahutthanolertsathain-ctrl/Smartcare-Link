@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>บอร์ดเจ้าหน้าที่ | ระบบคัดกรองผู้ป่วย</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com" defer></script>
   <style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');body{font-family:'Sarabun',sans-serif}</style>
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-800">
@@ -69,7 +69,8 @@ async function loadAlerts(){try{const res=await fetch(`${API}/emergencies`);if(!
   document.getElementById('alerts').innerHTML=items.length?items.map(a=>`<article class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div><div class="flex items-center gap-2"><span class="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500"></span><h3 class="font-bold text-red-800">${esc(a.alert_type)}</h3></div><p class="mt-1 text-sm text-slate-600">${esc(a.details||'ไม่มีรายละเอียด')} · HN ${esc(maskedId(a.patient_id))}</p><p class="mt-1 text-xs text-slate-400">รับแจ้ง ${thaiTime(a.created_at)}${a.latitude!=null?' · มีพิกัด GPS':''}</p><a href="/dispatch" class="mt-2 inline-block text-sm font-semibold text-blue-700 underline">ดูตำแหน่งและประสานหน่วย</a></div><button onclick="acknowledge(${a.id})" class="shrink-0 rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">รับทราบเหตุ</button></article>`).join(''):'<p class="p-5 text-sm text-slate-500">ไม่มีเหตุที่รอรับทราบ</p>';
 }catch(e){document.getElementById('connection-error').classList.remove('hidden')}}
 async function acknowledge(id){try{const res=await fetch(`${API}/emergencies/${id}`,{method:'PATCH'});if(!res.ok)throw Error();await loadAlerts()}catch(e){alert('รับทราบเหตุไม่สำเร็จ กรุณาลองอีกครั้ง')}}
-async function refreshAll(){await Promise.all([loadQueue(),loadAlerts()]);document.getElementById('updated-at').textContent=new Date().toLocaleTimeString('th-TH')}
-refreshAll();setInterval(refreshAll,5000);
+let refreshing=false;
+async function refreshAll(){if(refreshing)return;refreshing=true;try{await Promise.all([loadQueue(),loadAlerts()]);document.getElementById('updated-at').textContent=new Date().toLocaleTimeString('th-TH')}finally{refreshing=false}}
+refreshAll();setInterval(()=>{if(!document.hidden)refreshAll()},15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAll()});
 </script>
 </body></html>

@@ -15,7 +15,6 @@ import re
 import hashlib
 import hmac
 import os
-from http.cookies import SimpleCookie
 from datetime import timezone
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -267,12 +266,11 @@ class TriageHandler(BaseHTTPRequestHandler):
         if filename in ("community_portal.html", "dispatch_dashboard.html", "patient_portal.html"):
             map_assets = b'''<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/map_picker.js"></script><style>.location-map{height:260px;min-height:220px;width:100%;border-radius:.75rem;z-index:0}.leaflet-container{font:inherit}</style>'''
             body = body.replace(b"</head>", map_assets + b"</head>", 1)
-        if filename not in ("login.html", "setup.html"):
-            toolbar = '''<script>(()=>{const nativeFetch=window.fetch.bind(window);window.fetch=(input,options={})=>nativeFetch(input,{...options,credentials:"same-origin"})})()</script><style>#med-session-bar{position:fixed;right:12px;top:10px;z-index:99999;background:#fff;border:1px solid #cbd5e1;border-radius:999px;padding:5px 10px;font:13px system-ui;box-shadow:0 2px 8px #0002}#med-session-bar button{border:0;background:#0f766e;color:#fff;border-radius:999px;padding:5px 10px;cursor:pointer}</style><div id="med-session-bar">ล็อกอินแล้ว <button onclick="fetch('/api/v1/auth/logout',{method:'POST'}).then(()=>location.href='/login')">ออกจากระบบ</button></div>'''.encode("utf-8")
-            body = body.replace(b"<body>", b"<body>" + toolbar, 1)
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Cache-Control", "no-store")
+        # These HTML pages are identical for every visitor; let Vercel serve
+        # them from its edge cache instead of starting a Python function each time.
+        self.send_header("Cache-Control", "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -284,26 +282,12 @@ class TriageHandler(BaseHTTPRequestHandler):
         return count
 
     def current_user(self):
-        cookie = SimpleCookie(self.headers.get("Cookie", ""))
-        morsel = cookie.get("med_session")
-        if not morsel:
-            return None
-        digest = hashlib.sha256(morsel.value.encode()).hexdigest()
-        conn = db_connect()
-        row = conn.execute("SELECT u.id, u.username FROM app_sessions s JOIN app_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?", (digest, datetime.now(BANGKOK).isoformat())).fetchone()
-        conn.close()
-        return dict(row) if row else None
+        # Public portfolio demo: authentication is intentionally disabled.
+        return {"id": 0, "username": "ผู้เข้าชม"}
 
     def require_login(self, api=False):
-        if self.current_user():
-            return True
-        if api:
-            self.send_json({"detail": "กรุณาเข้าสู่ระบบก่อน"}, 401)
-        else:
-            self.send_response(302)
-            self.send_header("Location", "/setup" if self.user_count() == 0 else "/login")
-            self.end_headers()
-        return False
+        # All pages and API routes are public for the portfolio demonstration.
+        return True
 
     def set_session(self, user_id):
         token = secrets.token_urlsafe(32)
@@ -387,15 +371,11 @@ class TriageHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path == "/setup" and self.user_count() == 0:
-            return self.send_page("setup.html")
-        if parsed.path == "/login":
-            if self.current_user():
-                self.send_response(302); self.send_header("Location", "/"); self.end_headers(); return
-            return self.send_page("login.html")
+        if parsed.path in ("/setup", "/login"):
+            self.send_response(302); self.send_header("Location", "/"); self.end_headers(); return
         if parsed.path == "/api/v1/auth/me":
             user = self.current_user()
-            return self.send_json({"authenticated": bool(user), "username": user["username"] if user else None})
+            return self.send_json({"authenticated": True, "username": user["username"]})
         if parsed.path.startswith("/api/") and not self.require_login(api=True):
             return
         if parsed.path not in ("/api/v1/health",) and not parsed.path.startswith("/api/") and parsed.path not in ("/setup", "/login") and not self.require_login():
@@ -404,6 +384,7 @@ class TriageHandler(BaseHTTPRequestHandler):
             body = (BASE_DIR / "map_picker.js").read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Cache-Control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
@@ -520,14 +501,9 @@ class TriageHandler(BaseHTTPRequestHandler):
             data = self.read_json()
             path = urlparse(self.path).path
             if path in ("/api/v1/auth/setup", "/api/v1/auth/login"):
-                return self.auth_post(path, data)
+                return self.send_json({"detail": "ระบบนี้ปิดการเข้าสู่ระบบแล้ว"}, 410)
             if path == "/api/v1/auth/logout":
-                user = self.current_user()
-                if user:
-                    cookie = SimpleCookie(self.headers.get("Cookie", "")); morsel = cookie.get("med_session")
-                    if morsel:
-                        conn = db_connect(); conn.execute("DELETE FROM app_sessions WHERE token_hash=?", (hashlib.sha256(morsel.value.encode()).hexdigest(),)); conn.commit(); conn.close()
-                self.send_response(200); self.send_header("Set-Cookie", "med_session=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"); self.send_header("Content-Length", "0"); self.end_headers(); return
+                return self.send_json({"status": "public_demo"})
             if not self.require_login(api=True):
                 return
             if self.path == "/api/v1/triage":

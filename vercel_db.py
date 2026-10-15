@@ -12,6 +12,14 @@ DatabaseError = psycopg.Error
 IntegrityError = psycopg.IntegrityError
 
 _schema_ready = False
+_SCHEMA_OBJECTS = [
+    "triage_records", "emergency_alerts", "patients", "vital_records",
+    "home_visits", "care_requests", "dispatch_resources", "call_sessions",
+    "call_signals", "training_progress", "app_users", "app_sessions",
+    "login_attempts", "idx_triage_status", "idx_alert_status",
+    "idx_vitals_patient", "idx_visits_status", "idx_call_signals",
+    "idx_login_attempts",
+]
 _ID_TABLES = {
     "app_users",
     "emergency_alerts",
@@ -236,8 +244,19 @@ def connect(database_url: str) -> Connection:
     if not _schema_ready:
         try:
             with raw.cursor() as cursor:
-                for statement in _SCHEMA:
-                    cursor.execute(statement)
+                # A Vercel cold start gets a fresh Python process. Check whether
+                # the complete schema already exists with one small query, and
+                # only run the DDL batch for a new or incomplete database.
+                cursor.execute(
+                    "SELECT COUNT(*) FROM pg_class c "
+                    "JOIN pg_namespace n ON n.oid = c.relnamespace "
+                    "WHERE n.nspname = 'public' AND c.relname = ANY(%s)",
+                    (_SCHEMA_OBJECTS,),
+                )
+                schema_complete = cursor.fetchone()[0] == len(_SCHEMA_OBJECTS)
+                if not schema_complete:
+                    for statement in _SCHEMA:
+                        cursor.execute(statement)
             raw.commit()
             _schema_ready = True
         except Exception:

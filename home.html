@@ -106,6 +106,51 @@
     .dispatch .staff-link { color: #ad5a08; }
     .training .staff-link { color: #6842a6; }
     .footer-note { margin-top: 18px; padding: 15px 17px; color: #536879; font-size: .84rem; line-height: 1.6; }
+    #welcome-gate[hidden], #site-content[hidden] { display: none !important; }
+    #welcome-gate {
+      display: grid;
+      min-height: 100vh;
+      min-height: 100svh;
+      place-items: center;
+      padding: 24px;
+      background: radial-gradient(circle at top right, #d8f0ed 0, transparent 38%), #f2f7f8;
+    }
+    .welcome-card {
+      width: min(100%, 560px);
+      padding: clamp(24px, 6vw, 42px);
+      border: 1px solid #dbe6ea;
+      border-radius: 28px;
+      background: #fff;
+      box-shadow: 0 20px 60px #073b631c;
+    }
+    .welcome-icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border-radius: 18px;
+      background: #e6f5f2;
+      font-size: 1.8rem;
+    }
+    .welcome-eyebrow { margin: 20px 0 6px; color: var(--teal); font-size: .9rem; font-weight: 800; }
+    .welcome-card h1 { color: var(--navy); font-size: clamp(1.65rem, 6vw, 2.2rem); letter-spacing: -.02em; }
+    .welcome-copy { margin: 16px 0 0; color: #425b6b; font-size: 1.05rem; line-height: 1.85; }
+    .welcome-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 26px;
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--teal);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .welcome-button:hover { background: #066b76; }
+    .welcome-button:focus-visible { outline: 3px solid #f0b84b; outline-offset: 3px; }
     @media (max-width: 620px) {
       .page { width: min(100% - 24px, 520px); padding: 12px 0 28px; }
       .hero { border-radius: 22px; }
@@ -122,7 +167,17 @@
   </style>
 </head>
 <body>
-  <main class="page">
+  <section id="welcome-gate" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="welcome-card">
+      <span class="welcome-icon" aria-hidden="true">🙏</span>
+      <p class="welcome-eyebrow">Smartcare Link · เว็บต้นแบบเพื่อสาธิต</p>
+      <h1 id="welcome-title">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
+      <p class="welcome-copy">Smartcare Link ยังเป็นเว็บต้นแบบสำหรับสาธิต บางช่วงอาจตอบสนองช้าเพราะโฮสต์ที่ใช้มีทรัพยากรจำกัด และบางฟังก์ชันต้องเชื่อมต่อบริการภายนอก 🙏</p>
+      <button class="welcome-button" id="welcome-continue" type="button" autofocus>อ่านแล้ว เข้าสู่เว็บไซต์</button>
+    </div>
+  </section>
+
+  <main class="page" id="site-content" tabindex="-1" hidden>
     <header class="hero">
       <p class="eyebrow">ระบบดูแลสุขภาพชุมชน</p>
       <h1>เลือกหน้าใช้งาน</h1>
@@ -194,5 +249,14 @@
 
     <p class="footer-note">หมายเหตุ: ปุ่มเหล่านี้ช่วยแยกทางเข้าและเมนูตามงานเท่านั้น ระบบต้นแบบยังใช้บัญชีผู้ดูแลร่วมกันและยังไม่ได้กำหนดสิทธิ์แยกตามหน่วยงาน</p>
   </main>
+  <script>
+    const welcomeGate = document.getElementById("welcome-gate");
+    const siteContent = document.getElementById("site-content");
+    document.getElementById("welcome-continue").addEventListener("click", () => {
+      welcomeGate.hidden = true;
+      siteContent.hidden = false;
+      siteContent.focus({ preventScroll: true });
+    });
+  </script>
 </body>
 </html>

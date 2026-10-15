@@ -1,13 +1,198 @@
 <!doctype html>
-<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>เลือกหน้าใช้งาน | ระบบสุขภาพชุมชน</title><script src="https://cdn.tailwindcss.com" defer></script><style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');body{font-family:Sarabun,sans-serif}</style></head>
-<body class="min-h-screen bg-slate-100 text-slate-800"><main class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-<header class="rounded-3xl bg-gradient-to-r from-sky-900 to-teal-800 p-6 text-white shadow-lg sm:p-8"><p class="text-sm font-semibold tracking-wide text-teal-200">ระบบดูแลสุขภาพชุมชน</p><h1 class="mt-2 text-3xl font-extrabold sm:text-4xl">เลือกหน้าใช้งาน</h1><p class="mt-2 max-w-2xl text-sm text-sky-100 sm:text-base">เลือกกลุ่มผู้ใช้งานของคุณ เพื่อไปยังเมนูที่เกี่ยวข้องโดยตรง</p></header>
-<section class="rounded-3xl border-2 border-rose-200 bg-white p-5 shadow-sm sm:p-7"><div class="flex flex-wrap items-start justify-between gap-4"><div class="max-w-2xl"><p class="font-bold text-rose-700">สำหรับประชาชน</p><h2 class="mt-1 text-2xl font-extrabold">ผู้ป่วยและญาติ</h2><p class="mt-2 text-slate-600">แจ้งอาการ ขอความช่วยเหลือฉุกเฉิน SOS ดูข้อมูลสุขภาพ และเข้าห้องปรึกษาทางวิดีโอ</p></div><span class="rounded-full bg-rose-100 px-4 py-2 text-sm font-bold text-rose-800">ประชาชน / ครอบครัว</span></div><div class="mt-5 grid gap-3 sm:grid-cols-2"><a href="/patient" class="rounded-2xl bg-rose-700 p-5 text-white transition hover:bg-rose-800"><span class="text-2xl">🧑‍🧑‍🧒</span><h3 class="mt-2 text-lg font-bold">เข้าสู่หน้าผู้ป่วย</h3><p class="mt-1 text-sm text-rose-100">ดูประวัติ ค่าวัด ขอเยี่ยมบ้าน และแจ้ง SOS</p><span class="mt-4 inline-flex rounded-lg bg-white px-4 py-2 font-bold text-rose-800">ไปหน้าผู้ป่วย →</span></a><a href="/screening" class="rounded-2xl border-2 border-rose-200 bg-rose-50 p-5 text-rose-950 transition hover:bg-rose-100"><span class="text-2xl">🩺</span><h3 class="mt-2 text-lg font-bold">ประเมินอาการ / รับคิว</h3><p class="mt-1 text-sm text-rose-800">ตอบคำถามอาการเพื่อรับการคัดกรองเบื้องต้น</p><span class="mt-4 inline-flex rounded-lg bg-white px-4 py-2 font-bold text-rose-800">เริ่มประเมินอาการ →</span></a></div><p class="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">หากเป็นเหตุฉุกเฉิน ให้โทร 1669 โดยตรง การกด SOS ในระบบต้นแบบนี้ไม่สามารถเรียกรถพยาบาลได้เอง</p></section>
-<section><div class="mb-3"><p class="font-bold text-slate-500">สำหรับเจ้าหน้าที่และผู้ปฏิบัติงาน</p><h2 class="text-2xl font-extrabold">เลือกหน่วยงาน</h2></div><div class="grid gap-4 sm:grid-cols-2">
-<a href="/community" class="group rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span class="inline-flex rounded-xl bg-emerald-100 p-3 text-2xl">🌿</span><p class="mt-3 text-sm font-bold text-emerald-800">อาสาสมัครสาธารณสุขประจำหมู่บ้าน</p><h3 class="mt-1 text-xl font-extrabold">อสม.</h3><p class="mt-2 text-sm text-slate-600">ทะเบียนผู้ป่วย บันทึกค่าวัด ติดตามเยี่ยมบ้าน และประสานวิดีโอคอล</p><span class="mt-4 inline-flex rounded-lg bg-emerald-700 px-4 py-2 font-bold text-white">เข้างาน อสม. →</span></a>
-<a href="/nurse" class="group rounded-2xl border border-blue-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span class="inline-flex rounded-xl bg-blue-100 p-3 text-2xl">🏥</span><p class="mt-3 text-sm font-bold text-blue-800">โรงพยาบาลส่งเสริมสุขภาพตำบล / โรงพยาบาลชุมชน</p><h3 class="mt-1 text-xl font-extrabold">รพ.สต. / รพช.</h3><p class="mt-2 text-sm text-slate-600">ดูคิวคัดกรอง รับทราบเหตุ และติดตามผู้ป่วย</p><span class="mt-4 inline-flex rounded-lg bg-blue-800 px-4 py-2 font-bold text-white">เข้าบอร์ด รพ.สต. / รพช. →</span></a>
-<a href="/dispatch" class="group rounded-2xl border border-orange-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span class="inline-flex rounded-xl bg-orange-100 p-3 text-2xl">🚑</span><p class="mt-3 text-sm font-bold text-orange-800">เทศบาล / หน่วยช่วยเหลือ</p><h3 class="mt-1 text-xl font-extrabold">ศูนย์ประสานงาน</h3><p class="mt-2 text-sm text-slate-600">ดูรายการ SOS จัดหน่วยช่วยเหลือ และจัดการทรัพยากร</p><span class="mt-4 inline-flex rounded-lg bg-orange-700 px-4 py-2 font-bold text-white">เข้าศูนย์ประสานงาน →</span></a>
-<a href="/training" class="group rounded-2xl border border-violet-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span class="inline-flex rounded-xl bg-violet-100 p-3 text-2xl">📚</span><p class="mt-3 text-sm font-bold text-violet-800">คู่มือและบทเรียน</p><h3 class="mt-1 text-xl font-extrabold">อบรมการใช้งาน</h3><p class="mt-2 text-sm text-slate-600">เลือกบทเรียนตามบทบาทและดูวิธีใช้งานระบบ</p><span class="mt-4 inline-flex rounded-lg bg-violet-800 px-4 py-2 font-bold text-white">เปิดคู่มืออบรม →</span></a>
-</div></section>
-<p class="rounded-xl bg-white p-4 text-xs leading-6 text-slate-500">หมายเหตุ: ปุ่มเหล่านี้ช่วยแยกทางเข้าและเมนูตามงานเท่านั้น ระบบต้นแบบยังใช้บัญชีผู้ดูแลร่วมกันและยังไม่ได้กำหนดสิทธิ์แยกตามหน่วยงาน</p>
-</main></body></html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f7f8">
+  <title>เลือกหน้าใช้งาน | Smartcare Link</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
+      color: #173042;
+      background: #f2f7f8;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-text-size-adjust: 100%;
+      --navy: #073b63;
+      --teal: #087f8c;
+      --muted: #536879;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: #f2f7f8; }
+    a { color: inherit; }
+    .page { width: min(100% - 32px, 1000px); margin: 0 auto; padding: 24px 0 40px; }
+    .hero {
+      overflow: hidden;
+      position: relative;
+      padding: clamp(24px, 6vw, 48px);
+      border-radius: 28px;
+      color: #fff;
+      background: linear-gradient(125deg, #073b63 0%, #087f8c 100%);
+      box-shadow: 0 16px 40px #073b6324;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -85px;
+      bottom: -145px;
+      border: 30px solid #ffffff13;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .eyebrow { margin: 0 0 8px; color: #c6f5ee; font-size: .92rem; font-weight: 700; }
+    h1 { margin: 0; font-size: clamp(2rem, 7vw, 3rem); line-height: 1.2; letter-spacing: -.03em; }
+    .hero-copy { max-width: 650px; margin: 12px 0 0; color: #e2f2f6; font-size: clamp(1rem, 2.7vw, 1.1rem); line-height: 1.7; }
+    .section { margin-top: 22px; }
+    .patient-panel, .staff-card, .notice, .footer-note {
+      border: 1px solid #dbe6ea;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 8px 24px #163b4a0a;
+    }
+    .patient-panel { padding: clamp(18px, 4vw, 30px); border-color: #f3d0d0; }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .section-kicker { margin: 0 0 4px; color: #a92e3b; font-size: .9rem; font-weight: 800; }
+    h2 { margin: 0; color: #182f40; font-size: clamp(1.45rem, 4.8vw, 1.85rem); line-height: 1.35; }
+    .description { margin: 9px 0 0; color: var(--muted); line-height: 1.65; }
+    .role-pill { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; background: #fff0f0; color: #87313a; font-size: .82rem; font-weight: 700; }
+    .patient-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+    .action-card {
+      display: flex;
+      min-height: 154px;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px;
+      border: 2px solid #f5d9dc;
+      border-radius: 18px;
+      background: #fff8f8;
+      color: #742d36;
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .action-card.primary { border-color: #a92e3b; background: #a92e3b; color: #fff; }
+    .action-card:hover, .staff-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px #17304218; }
+    .action-icon { font-size: 1.8rem; line-height: 1; }
+    .action-card h3 { margin: 12px 0 5px; font-size: 1.08rem; }
+    .action-card p { margin: 0; font-size: .91rem; line-height: 1.55; opacity: .9; }
+    .action-link { display: inline-block; margin-top: auto; padding-top: 15px; font-weight: 800; }
+    .notice { margin-top: 14px; padding: 13px 15px; border-color: #f2dda8; background: #fff9e9; color: #704c05; font-size: .9rem; line-height: 1.6; }
+    .staff-heading { margin: 0 0 12px; }
+    .staff-heading .section-kicker { color: #536879; }
+    .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .staff-card {
+      display: flex;
+      min-height: 205px;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .staff-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 15px; background: #e7f5ee; font-size: 1.6rem; }
+    .staff-card.community .staff-icon { background: #e7f5ee; }
+    .staff-card.nurse .staff-icon { background: #e8f1ff; }
+    .staff-card.dispatch .staff-icon { background: #fff0df; }
+    .staff-card.training .staff-icon { background: #f1eaff; }
+    .staff-label { margin: 14px 0 2px; color: #536879; font-size: .85rem; line-height: 1.5; }
+    .staff-card h3 { margin: 0; color: #173042; font-size: 1.28rem; }
+    .staff-card p { margin: 8px 0 16px; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+    .staff-link { margin-top: auto; font-weight: 800; }
+    .community .staff-link { color: #137547; }
+    .nurse .staff-link { color: #245ea8; }
+    .dispatch .staff-link { color: #ad5a08; }
+    .training .staff-link { color: #6842a6; }
+    .footer-note { margin-top: 18px; padding: 15px 17px; color: #536879; font-size: .84rem; line-height: 1.6; }
+    @media (max-width: 620px) {
+      .page { width: min(100% - 24px, 520px); padding: 12px 0 28px; }
+      .hero { border-radius: 22px; }
+      .section { margin-top: 14px; }
+      .section-heading { display: block; }
+      .role-pill { display: inline-block; margin-top: 12px; }
+      .patient-links, .staff-grid { grid-template-columns: 1fr; gap: 10px; }
+      .action-card { min-height: 142px; }
+      .staff-card { min-height: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">ระบบดูแลสุขภาพชุมชน</p>
+      <h1>เลือกหน้าใช้งาน</h1>
+      <p class="hero-copy">เลือกกลุ่มผู้ใช้งานของคุณ เพื่อไปยังเมนูที่เกี่ยวข้องโดยตรง</p>
+    </header>
+
+    <section class="section patient-panel" aria-labelledby="patient-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">สำหรับประชาชน</p>
+          <h2 id="patient-title">ผู้ป่วยและญาติ</h2>
+          <p class="description">แจ้งอาการ ขอความช่วยเหลือฉุกเฉิน SOS ดูข้อมูลสุขภาพ และเข้าห้องปรึกษาทางวิดีโอ</p>
+        </div>
+        <span class="role-pill">ประชาชน / ครอบครัว</span>
+      </div>
+      <div class="patient-links">
+        <a class="action-card primary" href="/patient">
+          <span class="action-icon" aria-hidden="true">🧑‍🧑‍🧒</span>
+          <h3>เข้าสู่หน้าผู้ป่วย</h3>
+          <p>ดูประวัติ ค่าวัด ขอเยี่ยมบ้าน และแจ้ง SOS</p>
+          <span class="action-link">ไปหน้าผู้ป่วย →</span>
+        </a>
+        <a class="action-card" href="/screening">
+          <span class="action-icon" aria-hidden="true">🩺</span>
+          <h3>ประเมินอาการ / รับคิว</h3>
+          <p>ตอบคำถามอาการเพื่อรับการคัดกรองเบื้องต้น</p>
+          <span class="action-link">เริ่มประเมินอาการ →</span>
+        </a>
+      </div>
+      <p class="notice"><strong>กรณีฉุกเฉิน:</strong> โทร 1669 โดยตรง การกด SOS ในระบบต้นแบบนี้ไม่สามารถเรียกรถพยาบาลได้เอง</p>
+    </section>
+
+    <section class="section" aria-labelledby="staff-title">
+      <div class="staff-heading">
+        <p class="section-kicker">สำหรับเจ้าหน้าที่และผู้ปฏิบัติงาน</p>
+        <h2 id="staff-title">เลือกหน่วยงาน</h2>
+      </div>
+      <div class="staff-grid">
+        <a class="staff-card community" href="/community">
+          <span class="staff-icon" aria-hidden="true">🌿</span>
+          <span class="staff-label">อาสาสมัครสาธารณสุขประจำหมู่บ้าน</span>
+          <h3>อสม.</h3>
+          <p>ทะเบียนผู้ป่วย บันทึกค่าวัด ติดตามเยี่ยมบ้าน และประสานวิดีโอคอล</p>
+          <span class="staff-link">เข้างาน อสม. →</span>
+        </a>
+        <a class="staff-card nurse" href="/nurse">
+          <span class="staff-icon" aria-hidden="true">🏥</span>
+          <span class="staff-label">โรงพยาบาลส่งเสริมสุขภาพตำบล / โรงพยาบาลชุมชน</span>
+          <h3>รพ.สต. / รพช.</h3>
+          <p>ดูคิวคัดกรอง รับทราบเหตุ และติดตามผู้ป่วย</p>
+          <span class="staff-link">เข้าบอร์ด รพ.สต. / รพช. →</span>
+        </a>
+        <a class="staff-card dispatch" href="/dispatch">
+          <span class="staff-icon" aria-hidden="true">🚑</span>
+          <span class="staff-label">เทศบาล / หน่วยช่วยเหลือ</span>
+          <h3>ศูนย์ประสานงาน</h3>
+          <p>ดูรายการ SOS จัดหน่วยช่วยเหลือ และจัดการทรัพยากร</p>
+          <span class="staff-link">เข้าศูนย์ประสานงาน →</span>
+        </a>
+        <a class="staff-card training" href="/training">
+          <span class="staff-icon" aria-hidden="true">📚</span>
+          <span class="staff-label">คู่มือและบทเรียน</span>
+          <h3>อบรมการใช้งาน</h3>
+          <p>เลือกบทเรียนตามบทบาทและดูวิธีใช้งานระบบ</p>
+          <span class="staff-link">เปิดคู่มืออบรม →</span>
+        </a>
+      </div>
+    </section>
+
+    <p class="footer-note">หมายเหตุ: ปุ่มเหล่านี้ช่วยแยกทางเข้าและเมนูตามงานเท่านั้น ระบบต้นแบบยังใช้บัญชีผู้ดูแลร่วมกันและยังไม่ได้กำหนดสิทธิ์แยกตามหน่วยงาน</p>
+  </main>
+</body>
+</html>

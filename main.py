@@ -415,6 +415,24 @@ class TriageHandler(BaseHTTPRequestHandler):
             rows = conn.execute(f"SELECT * FROM triage_records WHERE assessment_timestamp LIKE ?{status_filter} ORDER BY CASE triage_level WHEN 'Red' THEN 0 WHEN 'Yellow' THEN 1 ELSE 2 END, id", (f"{today}%",)).fetchall()
             conn.close()
             return self.send_json({"items": [json_safe(row) for row in rows]})
+        if parsed.path == "/api/v1/queue/status":
+            params = parse_qs(parsed.query)
+            try:
+                triage_id = int(params.get("triage_id", [""])[0])
+            except (TypeError, ValueError):
+                return self.send_json({"detail": "ต้องระบุรหัสคิว"}, 422)
+            patient_id = params.get("patient_id", [""])[0].strip()[:80]
+            if not patient_id:
+                return self.send_json({"detail": "ต้องระบุ HN"}, 422)
+            conn = db_connect()
+            row = conn.execute(
+                "SELECT id, patient_id, queue_number, estimated_time, status FROM triage_records WHERE id=? AND patient_id=?",
+                (triage_id, patient_id),
+            ).fetchone()
+            conn.close()
+            if not row:
+                return self.send_json({"detail": "ไม่พบคิวนี้"}, 404)
+            return self.send_json({"triage_id": row["id"], "queue_number": row["queue_number"], "estimated_time": row["estimated_time"], "status": row["status"]})
         if parsed.path == "/api/v1/emergencies":
             include = parse_qs(parsed.query).get("include_resolved", ["false"])[0] == "true"
             where = "" if include else "WHERE status = 'active'"
@@ -670,7 +688,7 @@ class TriageHandler(BaseHTTPRequestHandler):
             if est < now:
                 est = now + timedelta(minutes=5)
             estimated = est.strftime("%H:%M")
-        conn.execute("""INSERT INTO triage_records (patient_id, assessment_timestamp,
+        triage_cursor = conn.execute("""INSERT INTO triage_records (patient_id, assessment_timestamp,
             is_immediate_red_flag, main_category, symptom_name, sub_answers,
             triage_level, recommended_action, queue_number, estimated_time, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
@@ -682,7 +700,7 @@ class TriageHandler(BaseHTTPRequestHandler):
             cursor=conn.execute("INSERT INTO emergency_alerts (created_at, patient_id, alert_type, details, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)",(created_at,patient_id,"สัญญาณเตือนจากแบบประเมิน",symptom,latitude,longitude))
             assign_nearest_resource(conn,cursor.lastrowid,latitude,longitude)
         conn.commit(); conn.close()
-        return self.send_json({"status":"success","message":"บันทึกข้อมูลแล้ว","queue_number":queue_number,"estimated_time":estimated,"triage_level":level})
+        return self.send_json({"status":"success","message":"บันทึกข้อมูลแล้ว","triage_id":triage_cursor.lastrowid,"queue_number":queue_number,"estimated_time":estimated,"triage_level":level})
 
     def do_DELETE(self):
         if not self.require_login(api=True):

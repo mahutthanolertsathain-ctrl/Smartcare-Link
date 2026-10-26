@@ -389,6 +389,32 @@ class TriageHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        app_assets = {
+            "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json; charset=utf-8"),
+            "/app-icon-192.png": ("app-icon-192.png", "image/png"),
+            "/app-icon-512.png": ("app-icon-512.png", "image/png"),
+            "/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),
+        }
+        if parsed.path == "/service-worker.js":
+            body = (BASE_DIR / "service-worker.js").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Service-Worker-Allowed", "/")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path in app_assets:
+            filename, content_type = app_assets[parsed.path]
+            body = (BASE_DIR / filename).read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Cache-Control", "public, max-age=3600, s-maxage=86400")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/":
             return self.send_page("home.html")
         if parsed.path == "/screening":

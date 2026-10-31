@@ -1,4 +1,25 @@
 (() => {
+  let leafletPromise;
+  function loadLeaflet() {
+    if (window.L) return Promise.resolve();
+    if (!leafletPromise) leafletPromise = new Promise((resolve, reject) => {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.async = true;
+      let cssReady = false, scriptReady = false;
+      const timer = setTimeout(() => reject(new Error('Map load timeout')), 15000);
+      const ready = () => { if (cssReady && scriptReady) { clearTimeout(timer); resolve(); } };
+      const failed = () => { clearTimeout(timer); reject(new Error('Map load failed')); };
+      css.onload = () => { cssReady = true; ready(); };
+      script.onload = () => { scriptReady = true; ready(); };
+      css.onerror = script.onerror = failed;
+      document.head.append(css, script);
+    });
+    return leafletPromise;
+  }
   const valid = (lat, lng) => lat != null && lng != null && Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) && lat !== '' && lng !== '' && Number(lat) >= -90 && Number(lat) <= 90 && Number(lng) >= -180 && Number(lng) <= 180;
 
   window.createLocationPicker = function ({containerId, latitudeInputId, longitudeInputId, statusId, locateButtonId, initialLatitude, initialLongitude, onLocation}) {
@@ -42,19 +63,30 @@
     };
 
     // Keep GPS usable even if the map library or map tiles fail to load.
-    if (container && latitudeInput && longitudeInput && window.L) {
-      map = L.map(container, {scrollWheelZoom: false}).setView([13.7563, 100.5018], 5);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'
-      }).addTo(map);
-      map.on('click', event => setLocation(event.latlng.lat, event.latlng.lng, false));
-      requestAnimationFrame(() => map.invalidateSize());
-      window.addEventListener('resize', () => map.invalidateSize());
-      if (valid(initialLatitude, initialLongitude)) setLocation(initialLatitude, initialLongitude, true);
-    } else if (!window.L) {
-      showStatus('แผนที่โหลดไม่สำเร็จ แต่ยังลองใช้ตำแหน่ง GPS ได้');
+    async function initializeMap() {
+      if (!container || !latitudeInput || !longitudeInput) return;
+      try {
+        await loadLeaflet();
+        map = L.map(container, {scrollWheelZoom: false}).setView([13.7563, 100.5018], 5);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'
+        }).addTo(map);
+        map.on('click', event => setLocation(event.latlng.lat, event.latlng.lng, false));
+        requestAnimationFrame(() => map.invalidateSize());
+        window.addEventListener('resize', () => map.invalidateSize());
+        if (valid(latitudeInput.value, longitudeInput.value)) setLocation(latitudeInput.value, longitudeInput.value, true);
+      } catch (_) {
+        showStatus('แผนที่โหลดไม่สำเร็จ แต่ยังลองใช้ตำแหน่ง GPS ได้');
+      }
     }
+    if (valid(initialLatitude, initialLongitude)) setLocation(initialLatitude, initialLongitude, false);
+    if (container && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) { observer.disconnect(); initializeMap(); }
+      }, {rootMargin: '200px'});
+      observer.observe(container);
+    } else initializeMap();
 
     if (button) {
       button.addEventListener('click', () => {
@@ -91,6 +123,6 @@
       });
     }
 
-    return {setLocation, clear: () => setLocation(null, null), map};
+    return {setLocation, clear: () => setLocation(null, null), get map() { return map; }};
   };
 })();

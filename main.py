@@ -264,13 +264,14 @@ class TriageHandler(BaseHTTPRequestHandler):
         path = BASE_DIR / filename
         body = path.read_bytes()
         if filename in ("community_portal.html", "dispatch_dashboard.html", "patient_portal.html"):
-            map_assets = b'''<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/map_picker.js"></script><style>.location-map{height:260px;min-height:220px;width:100%;border-radius:.75rem;z-index:0}.leaflet-container{font:inherit}</style>'''
+            map_assets = b'''<script src="/map_picker.js?v=20261031"></script><style>.location-map{height:260px;min-height:220px;width:100%;border-radius:.75rem;z-index:0;background:#edf4f5}.leaflet-container{font:inherit}</style>'''
             body = body.replace(b"</head>", map_assets + b"</head>", 1)
+        body = body.replace(b"</head>", b'<script defer src="/app_navigation.js"></script></head>', 1)
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         # These HTML pages are identical for every visitor; let Vercel serve
         # them from its edge cache instead of starting a Python function each time.
-        self.send_header("Cache-Control", "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800")
+        self.send_header("Cache-Control", "public, max-age=120, s-maxage=86400, stale-while-revalidate=604800")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -380,8 +381,8 @@ class TriageHandler(BaseHTTPRequestHandler):
             return
         if parsed.path not in ("/api/v1/health",) and not parsed.path.startswith("/api/") and parsed.path not in ("/setup", "/login") and not self.require_login():
             return
-        if parsed.path == "/map_picker.js":
-            body = (BASE_DIR / "map_picker.js").read_bytes()
+        if parsed.path in ("/map_picker.js", "/app_navigation.js"):
+            body = (BASE_DIR / parsed.path.lstrip("/")).read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "application/javascript; charset=utf-8")
             self.send_header("Cache-Control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800")

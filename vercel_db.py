@@ -3,15 +3,48 @@
 from __future__ import annotations
 
 import re
+import weakref
+from threading import Lock
 from typing import Any
 
 import psycopg
 from psycopg.rows import tuple_row
+from psycopg_pool import ConnectionPool
 
 DatabaseError = psycopg.Error
 IntegrityError = psycopg.IntegrityError
 
 _schema_ready = False
+_pool = None
+_pool_lock = Lock()
+_schema_lock = Lock()
+
+
+def _get_pool(database_url):
+    global _pool
+    with _pool_lock:
+        if _pool is None:
+            _pool = ConnectionPool(
+                database_url, min_size=0, max_size=4, max_idle=60,
+                timeout=15, reconnect_timeout=15, open=True,
+                check=ConnectionPool.check_connection,
+                kwargs={"connect_timeout": 10, "prepare_threshold": None,
+                        "row_factory": tuple_row},
+            )
+        return _pool
+
+
+def _release(raw, pool):
+    # A read also opens a transaction. Never carry it into the next request.
+    try:
+        if not raw.closed:
+            raw.rollback()
+    except Exception:
+        raw.close()
+    finally:
+        pool.putconn(raw)
+
+
 _SCHEMA_OBJECTS = [
     "triage_records", "emergency_alerts", "patients", "vital_records",
     "home_visits", "care_requests", "dispatch_resources", "call_sessions",
@@ -217,8 +250,10 @@ class Cursor:
 
 
 class Connection:
-    def __init__(self, raw):
+    def __init__(self, raw, pool):
         self._raw = raw
+        # Also return connections if a handler raises before its explicit close.
+        self._release = weakref.finalize(self, _release, raw, pool)
 
     def execute(self, sql: str, params=()):
         return Cursor(self._raw.cursor()).execute(sql, params)
@@ -230,37 +265,34 @@ class Connection:
         self._raw.rollback()
 
     def close(self):
-        self._raw.close()
+        self._release()
 
 
 def connect(database_url: str) -> Connection:
     global _schema_ready
-    raw = psycopg.connect(
-        database_url,
-        connect_timeout=10,
-        prepare_threshold=None,
-        row_factory=tuple_row,
-    )
-    if not _schema_ready:
-        try:
-            with raw.cursor() as cursor:
-                # A Vercel cold start gets a fresh Python process. Check whether
-                # the complete schema already exists with one small query, and
-                # only run the DDL batch for a new or incomplete database.
-                cursor.execute(
-                    "SELECT COUNT(*) FROM pg_class c "
-                    "JOIN pg_namespace n ON n.oid = c.relnamespace "
-                    "WHERE n.nspname = 'public' AND c.relname = ANY(%s)",
-                    (_SCHEMA_OBJECTS,),
-                )
-                schema_complete = cursor.fetchone()[0] == len(_SCHEMA_OBJECTS)
-                if not schema_complete:
-                    for statement in _SCHEMA:
-                        cursor.execute(statement)
-            raw.commit()
-            _schema_ready = True
-        except Exception:
-            raw.rollback()
-            raw.close()
-            raise
-    return Connection(raw)
+    pool = _get_pool(database_url)
+    raw = pool.getconn()
+    connection = Connection(raw, pool)
+    with _schema_lock:
+        if not _schema_ready:
+            try:
+                with raw.cursor() as cursor:
+                    # A Vercel cold start gets a fresh Python process. Check whether
+                    # the complete schema already exists with one small query, and
+                    # only run the DDL batch for a new or incomplete database.
+                    cursor.execute(
+                        "SELECT COUNT(*) FROM pg_class c "
+                        "JOIN pg_namespace n ON n.oid = c.relnamespace "
+                        "WHERE n.nspname = 'public' AND c.relname = ANY(%s)",
+                        (_SCHEMA_OBJECTS,),
+                    )
+                    schema_complete = cursor.fetchone()[0] == len(_SCHEMA_OBJECTS)
+                    if not schema_complete:
+                        for statement in _SCHEMA:
+                            cursor.execute(statement)
+                raw.commit()
+                _schema_ready = True
+            except Exception:
+                connection.close()
+                raise
+    return connection

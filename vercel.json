@@ -3,7 +3,7 @@
   "regions": ["sin1"],
   "functions": {
     "api/index.py": {
-      "includeFiles": "{*.html,map_picker.js,service-worker.js,manifest.webmanifest,app-icon-192.png,app-icon-512.png,apple-touch-icon.png}",
+      "includeFiles": "{*.html,map_picker.js,app_navigation.js,service-worker.js,manifest.webmanifest,app-icon-192.png,app-icon-512.png,apple-touch-icon.png}",
       "maxDuration": 30
     }
   },
@@ -19,6 +19,7 @@
     { "source": "/telemedicine", "destination": "/api/index?__request_path=/telemedicine" },
     { "source": "/training", "destination": "/api/index?__request_path=/training" },
     { "source": "/patient", "destination": "/api/index?__request_path=/patient" },
+    { "source": "/app_navigation.js", "destination": "/api/index?__request_path=/app_navigation.js" },
     { "source": "/map_picker.js", "destination": "/api/index?__request_path=/map_picker.js" },
     { "source": "/service-worker.js", "destination": "/api/index?__request_path=/service-worker.js" },
     { "source": "/manifest.webmanifest", "destination": "/api/index?__request_path=/manifest.webmanifest" },

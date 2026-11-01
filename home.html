@@ -1,274 +1,35 @@
 <!doctype html>
-<html lang="th">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f2f7f8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Smartcare Link">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <title>เลือกหน้าใช้งาน | Smartcare Link</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
-      color: #173042;
-      background: #f2f7f8;
-      font-synthesis: none;
-      text-rendering: optimizeLegibility;
-      -webkit-text-size-adjust: 100%;
-      --navy: #073b63;
-      --teal: #087f8c;
-      --muted: #536879;
-    }
-
-    * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; background: #f2f7f8; }
-    a { color: inherit; }
-    .page { width: min(100% - 32px, 1000px); margin: 0 auto; padding: 24px 0 40px; }
-    .hero {
-      overflow: hidden;
-      position: relative;
-      padding: clamp(24px, 6vw, 48px);
-      border-radius: 28px;
-      color: #fff;
-      background: linear-gradient(125deg, #073b63 0%, #087f8c 100%);
-      box-shadow: 0 16px 40px #073b6324;
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      right: -85px;
-      bottom: -145px;
-      border: 30px solid #ffffff13;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .eyebrow { margin: 0 0 8px; color: #c6f5ee; font-size: .92rem; font-weight: 700; }
-    h1 { margin: 0; font-size: clamp(2rem, 7vw, 3rem); line-height: 1.2; letter-spacing: -.03em; }
-    .hero-copy { max-width: 650px; margin: 12px 0 0; color: #e2f2f6; font-size: clamp(1rem, 2.7vw, 1.1rem); line-height: 1.7; }
-    .section { margin-top: 22px; }
-    .patient-panel, .staff-card, .notice, .footer-note {
-      border: 1px solid #dbe6ea;
-      border-radius: 22px;
-      background: #fff;
-      box-shadow: 0 8px 24px #163b4a0a;
-    }
-    .patient-panel { padding: clamp(18px, 4vw, 30px); border-color: #f3d0d0; }
-    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-    .section-kicker { margin: 0 0 4px; color: #a92e3b; font-size: .9rem; font-weight: 800; }
-    h2 { margin: 0; color: #182f40; font-size: clamp(1.45rem, 4.8vw, 1.85rem); line-height: 1.35; }
-    .description { margin: 9px 0 0; color: var(--muted); line-height: 1.65; }
-    .role-pill { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; background: #fff0f0; color: #87313a; font-size: .82rem; font-weight: 700; }
-    .patient-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
-    .action-card {
-      display: flex;
-      min-height: 154px;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 18px;
-      border: 2px solid #f5d9dc;
-      border-radius: 18px;
-      background: #fff8f8;
-      color: #742d36;
-      text-decoration: none;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .action-card.primary { border-color: #a92e3b; background: #a92e3b; color: #fff; }
-    .action-card:hover, .staff-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px #17304218; }
-    .action-icon { font-size: 1.8rem; line-height: 1; }
-    .action-card h3 { margin: 12px 0 5px; font-size: 1.08rem; }
-    .action-card p { margin: 0; font-size: .91rem; line-height: 1.55; opacity: .9; }
-    .action-link { display: inline-block; margin-top: auto; padding-top: 15px; font-weight: 800; }
-    .notice { margin-top: 14px; padding: 13px 15px; border-color: #f2dda8; background: #fff9e9; color: #704c05; font-size: .9rem; line-height: 1.6; }
-    .staff-heading { margin: 0 0 12px; }
-    .staff-heading .section-kicker { color: #536879; }
-    .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .staff-card {
-      display: flex;
-      min-height: 205px;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 20px;
-      text-decoration: none;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .staff-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 15px; background: #e7f5ee; font-size: 1.6rem; }
-    .staff-card.community .staff-icon { background: #e7f5ee; }
-    .staff-card.nurse .staff-icon { background: #e8f1ff; }
-    .staff-card.dispatch .staff-icon { background: #fff0df; }
-    .staff-card.training .staff-icon { background: #f1eaff; }
-    .staff-label { margin: 14px 0 2px; color: #536879; font-size: .85rem; line-height: 1.5; }
-    .staff-card h3 { margin: 0; color: #173042; font-size: 1.28rem; }
-    .staff-card p { margin: 8px 0 16px; color: var(--muted); font-size: .92rem; line-height: 1.55; }
-    .staff-link { margin-top: auto; font-weight: 800; }
-    .community .staff-link { color: #137547; }
-    .nurse .staff-link { color: #245ea8; }
-    .dispatch .staff-link { color: #ad5a08; }
-    .training .staff-link { color: #6842a6; }
-    .footer-note { margin-top: 18px; padding: 15px 17px; color: #536879; font-size: .84rem; line-height: 1.6; }
-    #welcome-gate[hidden], #site-content[hidden] { display: none !important; }
-    #welcome-gate {
-      display: grid;
-      min-height: 100vh;
-      min-height: 100svh;
-      place-items: center;
-      padding: 24px;
-      background: radial-gradient(circle at top right, #d8f0ed 0, transparent 38%), #f2f7f8;
-    }
-    .welcome-card {
-      width: min(100%, 560px);
-      padding: clamp(24px, 6vw, 42px);
-      border: 1px solid #dbe6ea;
-      border-radius: 28px;
-      background: #fff;
-      box-shadow: 0 20px 60px #073b631c;
-    }
-    .welcome-icon {
-      display: grid;
-      width: 58px;
-      height: 58px;
-      place-items: center;
-      border-radius: 18px;
-      background: #e6f5f2;
-      font-size: 1.8rem;
-    }
-    .welcome-eyebrow { margin: 20px 0 6px; color: var(--teal); font-size: .9rem; font-weight: 800; }
-    .welcome-card h1 { color: var(--navy); font-size: clamp(1.65rem, 6vw, 2.2rem); letter-spacing: -.02em; }
-    .welcome-copy { margin: 16px 0 0; color: #425b6b; font-size: 1.05rem; line-height: 1.85; }
-    .welcome-purpose { margin-top: 20px; padding: 16px 18px; border: 1px solid #cce8e3; border-radius: 16px; background: #f1faf8; }
-    .welcome-purpose h2 { margin: 0; color: var(--navy); font-size: 1.05rem; }
-    .welcome-purpose p { margin: 7px 0 0; color: #425b6b; font-size: .96rem; line-height: 1.75; }
-    .welcome-button {
-      width: 100%;
-      min-height: 54px;
-      margin-top: 26px;
-      padding: 13px 18px;
-      border: 0;
-      border-radius: 14px;
-      background: var(--teal);
-      color: #fff;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-    .welcome-button:hover { background: #066b76; }
-    .welcome-button:focus-visible { outline: 3px solid #f0b84b; outline-offset: 3px; }
-    @media (max-width: 620px) {
-      .page { width: min(100% - 24px, 520px); padding: 12px 0 28px; }
-      .hero { border-radius: 22px; }
-      .section { margin-top: 14px; }
-      .section-heading { display: block; }
-      .role-pill { display: inline-block; margin-top: 12px; }
-      .patient-links, .staff-grid { grid-template-columns: 1fr; gap: 10px; }
-      .action-card { min-height: 142px; }
-      .staff-card { min-height: auto; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-    }
-  </style>
-</head>
-<body>
-  <section id="welcome-gate" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
-    <div class="welcome-card">
-      <span class="welcome-icon" aria-hidden="true">🙏</span>
-      <p class="welcome-eyebrow">Smartcare Link · เว็บต้นแบบเพื่อสาธิต</p>
-      <h1 id="welcome-title">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
-      <p class="welcome-copy">Smartcare Link ยังเป็นเว็บต้นแบบสำหรับสาธิต บางช่วงอาจตอบสนองช้าเพราะโฮสต์ที่ใช้มีทรัพยากรจำกัด และบางฟังก์ชันต้องเชื่อมต่อบริการภายนอก 🙏</p>
-      <section class="welcome-purpose" aria-labelledby="welcome-purpose-title">
-        <h2 id="welcome-purpose-title">จุดประสงค์ของโครงการ</h2>
-        <p>เว็บนี้จัดทำขึ้นเพื่อศึกษาและสาธิตแนวคิดการใช้เทคโนโลยีช่วยประสานงานดูแลสุขภาพชุมชน เชื่อมการทำงานระหว่างผู้ป่วย/ญาติ อสม. รพ.สต./รพช. และเทศบาล ตั้งแต่การคัดกรองอาการ การติดตามสุขภาพ ไปจนถึงการแจ้งเหตุและประสานความช่วยเหลือ เพื่อเรียนรู้การพัฒนาเว็บและการออกแบบระบบที่ตอบโจทย์ผู้ใช้จริง</p>
-      </section>
-      <button class="welcome-button" id="welcome-continue" type="button" autofocus>อ่านแล้ว เข้าสู่เว็บไซต์</button>
-    </div>
-  </section>
-
-  <main class="page" id="site-content" tabindex="-1" hidden>
-    <header class="hero">
-      <p class="eyebrow">ระบบดูแลสุขภาพชุมชน</p>
-      <h1>เลือกหน้าใช้งาน</h1>
-      <p class="hero-copy">เลือกกลุ่มผู้ใช้งานของคุณ เพื่อไปยังเมนูที่เกี่ยวข้องโดยตรง</p>
-    </header>
-
-    <section class="section patient-panel" aria-labelledby="patient-title">
-      <div class="section-heading">
-        <div>
-          <p class="section-kicker">สำหรับประชาชน</p>
-          <h2 id="patient-title">ผู้ป่วยและญาติ</h2>
-          <p class="description">แจ้งอาการ ขอความช่วยเหลือฉุกเฉิน SOS ดูข้อมูลสุขภาพ และเข้าห้องปรึกษาทางวิดีโอ</p>
-        </div>
-        <span class="role-pill">ประชาชน / ครอบครัว</span>
-      </div>
-      <div class="patient-links">
-        <a class="action-card primary" href="/patient">
-          <span class="action-icon" aria-hidden="true">🧑‍🧑‍🧒</span>
-          <h3>เข้าสู่หน้าผู้ป่วย</h3>
-          <p>ดูประวัติ ค่าวัด ขอเยี่ยมบ้าน และแจ้ง SOS</p>
-          <span class="action-link">ไปหน้าผู้ป่วย →</span>
-        </a>
-        <a class="action-card" href="/screening">
-          <span class="action-icon" aria-hidden="true">🩺</span>
-          <h3>ประเมินอาการ / รับคิว</h3>
-          <p>ตอบคำถามอาการเพื่อรับการคัดกรองเบื้องต้น</p>
-          <span class="action-link">เริ่มประเมินอาการ →</span>
-        </a>
-      </div>
-      <p class="notice"><strong>กรณีฉุกเฉิน:</strong> โทร 1669 โดยตรง การกด SOS ในระบบต้นแบบนี้ไม่สามารถเรียกรถพยาบาลได้เอง</p>
-    </section>
-
-    <section class="section" aria-labelledby="staff-title">
-      <div class="staff-heading">
-        <p class="section-kicker">สำหรับเจ้าหน้าที่และผู้ปฏิบัติงาน</p>
-        <h2 id="staff-title">เลือกหน่วยงาน</h2>
-      </div>
-      <div class="staff-grid">
-        <a class="staff-card community" href="/community">
-          <span class="staff-icon" aria-hidden="true">🌿</span>
-          <span class="staff-label">อาสาสมัครสาธารณสุขประจำหมู่บ้าน</span>
-          <h3>อสม.</h3>
-          <p>ทะเบียนผู้ป่วย บันทึกค่าวัด ติดตามเยี่ยมบ้าน และประสานวิดีโอคอล</p>
-          <span class="staff-link">เข้างาน อสม. →</span>
-        </a>
-        <a class="staff-card nurse" href="/nurse">
-          <span class="staff-icon" aria-hidden="true">🏥</span>
-          <span class="staff-label">โรงพยาบาลส่งเสริมสุขภาพตำบล / โรงพยาบาลชุมชน</span>
-          <h3>รพ.สต. / รพช.</h3>
-          <p>ดูคิวคัดกรอง รับทราบเหตุ และติดตามผู้ป่วย</p>
-          <span class="staff-link">เข้าบอร์ด รพ.สต. / รพช. →</span>
-        </a>
-        <a class="staff-card dispatch" href="/dispatch">
-          <span class="staff-icon" aria-hidden="true">🚑</span>
-          <span class="staff-label">เทศบาล / หน่วยช่วยเหลือ</span>
-          <h3>ศูนย์ประสานงาน</h3>
-          <p>ดูรายการ SOS จัดหน่วยช่วยเหลือ และจัดการทรัพยากร</p>
-          <span class="staff-link">เข้าศูนย์ประสานงาน →</span>
-        </a>
-        <a class="staff-card training" href="/training">
-          <span class="staff-icon" aria-hidden="true">📚</span>
-          <span class="staff-label">คู่มือและบทเรียน</span>
-          <h3>อบรมการใช้งาน</h3>
-          <p>เลือกบทเรียนตามบทบาทและดูวิธีใช้งานระบบ</p>
-          <span class="staff-link">เปิดคู่มืออบรม →</span>
-        </a>
-      </div>
-    </section>
-
-    <p class="footer-note">หมายเหตุ: ปุ่มเหล่านี้ช่วยแยกทางเข้าและเมนูตามงานเท่านั้น ระบบต้นแบบยังใช้บัญชีผู้ดูแลร่วมกันและยังไม่ได้กำหนดสิทธิ์แยกตามหน่วยงาน</p>
-  </main>
-  <script>
-    const welcomeGate = document.getElementById("welcome-gate");
-    const siteContent = document.getElementById("site-content");
-    document.getElementById("welcome-continue").addEventListener("click", () => {
-      welcomeGate.hidden = true;
-      siteContent.hidden = false;
-      siteContent.focus({ preventScroll: true });
-    });
-  </script>
-</body>
-</html>
+<html lang="th"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7faf8"><meta name="description" content="Smartcare Link เว็บต้นแบบเชื่อมการดูแลสุขภาพชุมชน ระหว่างผู้ป่วย อสม. โรงพยาบาล และเทศบาล">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Smartcare Link | เชื่อมทุกการดูแล ใกล้ชุมชน</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;color:#193e45;background:#f7faf8;--ink:#193e45;--teal:#167d77;--muted:#607779;--line:#dce7e3;--ease:cubic-bezier(.2,.7,.2,1);color-scheme:light}*{box-sizing:border-box}body{margin:0;min-width:320px}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}button,a{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible{outline:3px solid #d29a44;outline-offset:5px}svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}h1,h2,h3,p{margin:0}p{line-height:1.8}.container{width:min(1160px,calc(100% - 64px));margin:auto}.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.6px;font-size:21px}.brand-mark{display:grid;place-items:center;width:40px;height:40px;background:var(--teal);color:white;border-radius:13px}.topbar{display:flex;justify-content:space-between;align-items:center;padding:23px 0;border-bottom:1px solid var(--line)}.topnav{display:flex;align-items:center;gap:28px;font-size:14px;font-weight:600}.topnav a:hover{color:var(--teal)}.demo{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid #d1e4dd;border-radius:30px;font-size:12px;color:#37695e;background:#eef6f1}.dot{width:6px;height:6px;border-radius:50%;background:#438c70}.hero{display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:56px;padding:76px 0 65px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.8px;color:var(--teal);margin-bottom:19px}.hero h1{font-size:clamp(34px,4.5vw,57px);font-weight:750;letter-spacing:-1.8px;line-height:1.35}.hero h1 em{font-style:normal;color:var(--teal)}.hero-copy{font-size:16px;color:var(--muted);max-width:470px;margin-top:22px}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.button{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:50px;padding:13px 23px;border:1px solid var(--line);border-radius:12px;font-size:14px;font-weight:700;transition:transform .2s,background .2s,box-shadow .2s;background:white}.button.primary{background:var(--teal);border-color:var(--teal);color:white}.button:hover{transform:translateY(-3px);box-shadow:0 8px 20px #193e4510}.button:active{transform:scale(.98)}.hero-note{margin-top:20px;font-size:12px;color:var(--muted)}.care-scene{position:relative;min-height:390px;border-radius:38px;background:#e6f0e9;overflow:hidden;border:1px solid #dbe8df}.care-scene:before,.care-scene:after{content:"";position:absolute;inset:40px 70px;border:1px solid #c5dcd1;border-radius:50%}.care-scene:after{inset:80px 30px;transform:rotate(-25deg)}.scene-heading{position:absolute;top:24px;left:28px;font-size:11px;color:#607b6a;letter-spacing:2px}.scene-center{position:absolute;top:122px;left:50%;transform:translateX(-50%);width:156px;height:145px;background:#fff;border:1px solid #d8e6dc;border-radius:25px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;box-shadow:0 16px 35px #25483b12;z-index:2}.scene-center>svg{color:var(--teal);width:38px;height:38px}.scene-center b{font-size:17px}.scene-center small{font-size:10px;color:var(--muted)}.scene-node{position:absolute;display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:15px;background:white;box-shadow:0 8px 25px #193e450b;z-index:3;font-size:12px;font-weight:700;animation:float 6s ease-in-out infinite}.scene-node svg{color:var(--teal);width:22px;height:22px}.node-patient{top:65px;left:25px}.node-community{top:80px;right:22px;animation-delay:-2s}.node-hospital{bottom:65px;left:22px;animation-delay:-3s}.node-dispatch{bottom:48px;right:23px;animation-delay:-1s}.scene-label{position:absolute;bottom:17px;left:0;right:0;text-align:center;color:#6b8475;font-size:10px}.section{padding:48px 0 55px;border-top:1px solid var(--line);scroll-margin-top:20px}.section-top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:26px}.section-top h2{font-size:29px;letter-spacing:-.7px}.section-top p{color:var(--muted);font-size:14px;margin-top:7px}.section-number{color:#8aa39b;font-size:12px;letter-spacing:2px}.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.role{position:relative;padding:24px 21px 20px;background:#fff;border:1px solid var(--line);border-radius:20px;display:flex;flex-direction:column;min-height:260px;transition:transform .25s var(--ease),box-shadow .25s,border-color .25s}.role:hover{transform:translateY(-6px);box-shadow:0 14px 32px #193e4510;border-color:#a3c7bb}.role:active{transform:translateY(-2px)}.role-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:var(--tint);color:var(--accent);margin-bottom:24px}.role h3{font-size:20px;margin-bottom:9px}.role p{font-size:13px;color:var(--muted);margin-bottom:22px}.role-link{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;color:var(--accent);margin-top:auto;padding-top:15px;border-top:1px solid #edf2ef}.role-link svg{width:18px;height:18px}.patient{--accent:#167d77;--tint:#e4f3ed}.community{--accent:#688445;--tint:#f0f4e6}.nurse{--accent:#3e6e9b;--tint:#e9f0f8}.dispatch{--accent:#ad6b40;--tint:#fbefe4}.care-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}.flow-item{padding-right:25px}.flow-num{font-size:12px;font-weight:700;color:var(--teal);margin-bottom:15px}.flow-item h3{font-size:18px;margin-bottom:10px}.flow-item p{font-size:14px;color:var(--muted)}.purpose-band{display:grid;grid-template-columns:1fr 1.3fr;gap:40px;padding:34px;background:#eaf2ed;border-radius:23px}.purpose-band h2{font-size:25px;line-height:1.5}.purpose-band p{font-size:14px;color:#4b6861}.training-link{display:inline-flex;gap:10px;align-items:center;font-size:13px;font-weight:700;color:var(--teal);margin-top:16px}.emergency{display:flex;gap:13px;align-items:flex-start;background:#fff7ed;color:#895833;border:1px solid #f0dfc9;border-radius:14px;padding:16px 20px;font-size:12px;margin-top:24px}.emergency svg{flex-shrink:0;width:20px;height:20px}.footer{display:flex;justify-content:space-between;gap:24px;padding:28px 0 35px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}[hidden]{display:none!important}#welcome-gate{min-height:100svh;display:grid;place-items:center;padding:28px;background:radial-gradient(ellipse at top,#e1efe7,transparent 70%)}.welcome-card{max-width:600px;padding:38px;border:1px solid var(--line);border-radius:28px;background:white;box-shadow:0 25px 80px #193e450b;animation:enter .5s var(--ease) both}.welcome-card .brand{margin-bottom:32px}.welcome-card h1{font-size:27px;line-height:1.5}.welcome-copy{font-size:14px;color:var(--muted);margin-top:15px}.welcome-purpose{padding:20px;background:#f0f6f2;border-radius:16px;margin-top:22px}.welcome-purpose h2{font-size:16px;margin-bottom:9px}.welcome-purpose p{font-size:13px;color:#4b6861}.welcome-button{width:100%;margin-top:24px}.reveal{animation:enter .6s var(--ease) both}.roles .role:nth-child(2){animation-delay:60ms}.roles .role:nth-child(3){animation-delay:120ms}.roles .role:nth-child(4){animation-delay:180ms}@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes float{50%{transform:translateY(-7px)}}@media(max-width:900px){.roles{grid-template-columns:repeat(2,1fr)}.hero{gap:25px}.hero h1{font-size:40px}.scene-node{font-size:11px;padding:11px}.care-scene{min-height:370px}}@media(max-width:620px){.container{width:calc(100% - 36px)}.topbar{padding:18px 0}.brand{font-size:18px}.topnav{gap:14px}.topnav>a{display:none}.hero{grid-template-columns:1fr;padding:40px 0;gap:30px}.hero h1{font-size:40px}.hero-copy{font-size:15px}.care-scene{min-height:340px;border-radius:28px}.scene-center{top:99px}.node-patient{top:50px}.node-community{top:58px}.node-hospital{bottom:48px}.node-dispatch{bottom:38px}.section{padding:34px 0}.section-top{align-items:start}.section-top h2{font-size:25px}.section-number{display:none}.roles{gap:12px}.role{padding:20px 15px;min-height:250px}.role h3{font-size:18px}.role p{font-size:12px}.role-icon{margin-bottom:20px}.care-flow{grid-template-columns:1fr;gap:25px}.flow-item{display:grid;grid-template-columns:35px 1fr;column-gap:12px}.flow-num{grid-row:span 2;padding-top:5px}.purpose-band{grid-template-columns:1fr;gap:15px;padding:25px}.footer{flex-direction:column;gap:8px}.welcome-card{padding:26px}.welcome-card h1{font-size:24px}.welcome-card .brand{margin-bottom:24px}.actions .button{flex:1;padding:13px 14px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+<svg aria-hidden="true" style="display:none"><defs>
+<symbol id="heart" viewBox="0 0 24 24"><path d="M20.5 4.7a5.5 5.5 0 0 0-7.8 0L12 5.4l-.7-.7a5.5 5.5 0 0 0-7.8 7.8L12 21l8.5-8.5a5.5 5.5 0 0 0 0-7.8Z"/><path d="M5 11h4l2-4 2 8 2-4h4"/></symbol>
+<symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+<symbol id="leaf" viewBox="0 0 24 24"><path d="M20 3C10 2 3 6 4 13s13 8 16-10Z"/><path d="m3 22 12-12"/></symbol>
+<symbol id="hospital" viewBox="0 0 24 24"><path d="M4 21V6h16v15M2 21h20M9 21v-5h6v5M12 3v8M8 7h8"/></symbol>
+<symbol id="ambulance" viewBox="0 0 24 24"><path d="M3 17H1V5h13v12H8m6 0h2m5 0h2v-6l-4-4h-5M5 8h5M7.5 5.5v5M18 9v3h5"/><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/></symbol>
+<symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+</defs></svg>
+<section id="welcome-gate" aria-labelledby="welcome-title"><div class="welcome-card">
+<div class="brand"><span class="brand-mark"><svg><use href="#heart"/></svg></span>Smartcare Link</div>
+<p class="eyebrow">A COMMUNITY HEALTH PROTOTYPE</p><h1 id="welcome-title">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
+<p class="welcome-copy">Smartcare Link ยังเป็นเว็บต้นแบบสำหรับสาธิต บางช่วงอาจตอบสนองช้าเพราะโฮสต์ที่ใช้มีทรัพยากรจำกัด และบางฟังก์ชันต้องเชื่อมต่อบริการภายนอก 🙏</p><section class="welcome-purpose" aria-labelledby="purpose-title"><h2 id="purpose-title">จุดประสงค์ของโครงการ</h2><p>เว็บนี้จัดทำขึ้นเพื่อศึกษาและสาธิตแนวคิดการใช้เทคโนโลยีช่วยประสานงานดูแลสุขภาพชุมชน เชื่อมการทำงานระหว่างผู้ป่วย/ญาติ อสม. รพ.สต./รพช. และเทศบาล ตั้งแต่การคัดกรองอาการ การติดตามสุขภาพ ไปจนถึงการแจ้งเหตุและประสานความช่วยเหลือ เพื่อเรียนรู้การพัฒนาเว็บและการออกแบบระบบที่ตอบโจทย์ผู้ใช้จริง</p></section>
+<button class="button primary welcome-button" id="welcome-continue" type="button">อ่านแล้ว เริ่มสำรวจเว็บไซต์ <svg aria-hidden="true"><use href="#arrow"/></svg></button></div></section>
+<div id="site-content" hidden><div class="container">
+<header class="topbar"><a class="brand" href="/" aria-label="Smartcare Link หน้าแรก"><span class="brand-mark"><svg aria-hidden="true"><use href="#heart"/></svg></span>Smartcare Link</a><nav class="topnav" aria-label="เมนูหลัก"><a href="#roles">เลือกหน้าใช้งาน</a><a href="#about">เกี่ยวกับโครงการ</a><span class="demo"><span class="dot"></span>เว็บต้นแบบสาธิต</span></nav></header>
+<main id="main-content" tabindex="-1"><section class="hero"><div><p class="eyebrow">CONNECTED CARE. CLOSER TO HOME.</p><h1>เชื่อมทุกการดูแล<br><em>ใกล้ชุมชนมากขึ้น</em></h1><p class="hero-copy">พื้นที่เดียวสำหรับผู้ป่วย อสม. และหน่วยงาน<br>ให้การส่งต่อข้อมูลและติดตามสุขภาพ<br>เป็นเรื่องที่เข้าใจง่ายขึ้น</p><div class="actions"><a class="button primary" href="#roles">เริ่มทดลองใช้งาน <svg aria-hidden="true"><use href="#arrow"/></svg></a><a class="button" href="/screening">ประเมินอาการ / รับคิว</a></div><p class="hero-note">เปิดได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์</p></div>
+<div class="care-scene" role="img" aria-label="ภาพแนวคิดเชื่อมการดูแลระหว่างผู้ป่วย อสม. โรงพยาบาล และเทศบาล"><span class="scene-heading">THE CARE CONNECTION</span><div class="scene-center"><svg><use href="#heart"/></svg><b>Smartcare Link</b><small>เชื่อมข้อมูล เชื่อมการดูแล</small></div><div class="scene-node node-patient"><svg><use href="#person"/></svg>ผู้ป่วยและญาติ</div><div class="scene-node node-community"><svg><use href="#leaf"/></svg>อสม.</div><div class="scene-node node-hospital"><svg><use href="#hospital"/></svg>รพ.สต. / รพช.</div><div class="scene-node node-dispatch"><svg><use href="#ambulance"/></svg>เทศบาล</div><span class="scene-label">ภาพจำลองแนวคิดการทำงานของโครงการ</span></div></section>
+<section class="section" id="roles"><div class="section-top"><div><p class="eyebrow">YOUR SPACE TO CARE</p><h2>เลือกพื้นที่การใช้งานของคุณ</h2><p>เมนูที่เกี่ยวข้องกับแต่ละบทบาท อยู่ในที่เดียว</p></div><span class="section-number">01 / EXPLORE</span></div><div class="roles">
+<a class="role patient" href="/patient"><span class="role-icon"><svg aria-hidden="true"><use href="#person"/></svg></span><h3>ผู้ป่วยและญาติ</h3><p>ประเมินอาการ ดูข้อมูลสุขภาพ ขอเยี่ยมบ้าน และแจ้ง SOS</p><span class="role-link">เข้าสู่หน้าผู้ป่วย<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role community" href="/community"><span class="role-icon"><svg aria-hidden="true"><use href="#leaf"/></svg></span><h3>อสม.</h3><p>ทะเบียนผู้ป่วย บันทึกค่าวัด และติดตามการเยี่ยมบ้าน</p><span class="role-link">เข้างาน อสม.<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role nurse" href="/nurse"><span class="role-icon"><svg aria-hidden="true"><use href="#hospital"/></svg></span><h3>รพ.สต. / รพช.</h3><p>จัดการคิว รับแจ้งเหตุ และประสานการดูแลผู้ป่วย</p><span class="role-link">เข้าบอร์ดเจ้าหน้าที่<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role dispatch" href="/dispatch"><span class="role-icon"><svg aria-hidden="true"><use href="#ambulance"/></svg></span><h3>เทศบาล</h3><p>ดูเหตุ SOS พร้อมตำแหน่ง และจัดการหน่วยช่วยเหลือ</p><span class="role-link">เข้าศูนย์ประสานงาน<svg aria-hidden="true"><use href="#arrow"/></svg></span></a>
+</div><div class="emergency"><svg aria-hidden="true"><use href="#ambulance"/></svg><p><strong>หากเกิดเหตุฉุกเฉิน โทร 1669 โดยตรง</strong> · SOS ในเว็บนี้ใช้เพื่อสาธิตการแจ้งเหตุ ไม่สามารถเรียกรถพยาบาลจริงได้</p></div></section>
+<section class="section"><div class="section-top"><div><p class="eyebrow">A CONTINUOUS CARE JOURNEY</p><h2>จากอาการวันนี้ สู่การดูแลต่อเนื่อง</h2></div><span class="section-number">02 / HOW IT WORKS</span></div><div class="care-flow"><article class="flow-item"><p class="flow-num">01</p><h3>เริ่มต้นที่ผู้ป่วย</h3><p>ประเมินอาการ รับคิว และส่งคำขอความช่วยเหลือผ่านหน้าเว็บ</p></article><article class="flow-item"><p class="flow-num">02</p><h3>ส่งต่อถึงผู้ดูแล</h3><p>อสม. และเจ้าหน้าที่ดูข้อมูลร่วมกัน บันทึกค่าวัด และติดตามการดูแล</p></article><article class="flow-item"><p class="flow-num">03</p><h3>ประสานงานในชุมชน</h3><p>จำลองการแจ้งเหตุพร้อมตำแหน่ง และจัดสรรหน่วยช่วยเหลือผ่านบอร์ดงาน</p></article></div></section>
+<section class="section" id="about"><div class="purpose-band"><div><p class="eyebrow">BUILT TO LEARN. DESIGNED TO CARE.</p><h2>ต้นแบบเล็ก ๆ<br>จากความตั้งใจเรียนรู้</h2></div><div><p>Smartcare Link จัดทำขึ้นเพื่อศึกษาและสาธิตว่าการพัฒนาเว็บและฐานข้อมูลสามารถช่วยเชื่อมการดูแลสุขภาพชุมชนได้อย่างไร ตั้งแต่การคัดกรอง การติดตามสุขภาพ ไปจนถึงการประสานความช่วยเหลือ โดยใช้ข้อมูลสมมติในการทดลอง</p><a class="training-link" href="/training">เปิดคู่มือและบทเรียนการใช้งาน <svg aria-hidden="true"><use href="#arrow"/></svg></a></div></div></section></main>
+<footer class="footer"><p>Smartcare Link · ระบบดูแลสุขภาพชุมชน</p><p>ต้นแบบเพื่อการศึกษา · ใช้ข้อมูลสมมติเท่านั้น · เปิดให้ทดลองโดยไม่มีระบบ Login</p></footer></div></div>
+<script>
+document.getElementById('welcome-continue').addEventListener('click',()=>{document.getElementById('welcome-gate').hidden=true;document.getElementById('site-content').hidden=false;document.getElementById('main-content').focus({preventScroll:true});window.scrollTo(0,0);document.querySelector('.hero').classList.add('reveal');document.querySelectorAll('.role').forEach(el=>el.classList.add('reveal'))});
+</script></body></html>

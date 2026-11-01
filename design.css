@@ -1,0 +1,33 @@
+/* Shared visual language for the working portals. No external font or UI runtime. */
+.app-shell{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#f5f8f6!important;color:#193e45;-webkit-font-smoothing:antialiased}
+.app-shell>header{background:#193e45!important;color:#fff;border-bottom:1px solid #31565b;box-shadow:none!important}
+.app-shell>header a{border-radius:10px;transition:background .18s}
+.app-shell>header a:hover{background:#ffffff14}
+.app-shell>main{padding-top:30px;padding-bottom:40px}
+.app-shell button,.app-shell input,.app-shell select,.app-shell textarea{font-family:inherit}
+.app-shell button{min-height:44px;border-radius:11px;touch-action:manipulation;transition:background .18s,transform .18s,box-shadow .18s}
+.app-shell button:active:not(:disabled){transform:scale(.975)}
+.app-shell button:disabled{cursor:wait;opacity:.65}
+.app-shell input:not([type=checkbox]):not([type=radio]),.app-shell select,.app-shell textarea{min-height:46px;border-color:#d3e0da;border-radius:11px;background-color:#fff;transition:border-color .2s,box-shadow .2s}
+.app-shell input:focus,.app-shell select:focus,.app-shell textarea:focus{outline:2px solid #81b9a9;outline-offset:2px}
+.app-shell :focus-visible{outline:3px solid #bc8f47;outline-offset:3px}
+.app-shell .bg-blue-600,.app-shell .bg-teal-700{background-color:#167d77}
+.app-shell .bg-blue-600:hover,.app-shell .bg-teal-700:hover{background-color:#106a64}
+.app-shell .bg-blue-50{background-color:#eaf4ef}
+.app-shell .text-blue-700,.app-shell .text-teal-700{color:#167d77}
+.app-shell .border-slate-100,.app-shell .border-slate-200{border-color:#dce7e1}
+.app-shell .shadow-sm{box-shadow:0 3px 18px #193e4505}
+.app-shell section.rounded-2xl,.app-shell article.rounded-2xl,.app-shell .step-card{border-radius:20px;border:1px solid #dce7e1}
+.app-shell h1,.app-shell h2{letter-spacing:-.35px}
+.app-shell th{font-weight:650;letter-spacing:0;text-transform:none;background:#f3f7f4}
+.app-shell tbody tr{transition:background-color .2s}
+.app-shell tbody tr:hover{background:#f7faf8}
+.app-shell .step-card:not(.hidden){animation:care-step-in .25s ease-out both}
+.app-shell #progress-bar{background:#167d77;transition:width .3s ease}
+.app-shell #queue-call-notice{border-radius:18px}
+.app-shell .is-working{position:relative;padding-right:32px!important}
+.app-shell .is-working:after{content:"";position:absolute;right:11px;top:calc(50% - 6px);width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:care-spin .7s linear infinite}
+@keyframes care-step-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes care-spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.app-shell>header>div{align-items:flex-start;flex-direction:column;gap:14px}.app-shell>header nav{gap:8px}.app-shell>header nav a{padding:9px 11px;font-size:12px}.app-shell>main{padding-top:20px}.app-shell .step-card{padding:22px}.app-shell button{min-height:46px}.app-shell table button{white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){.app-shell *,.app-shell *:before,.app-shell *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

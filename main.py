@@ -266,6 +266,9 @@ class TriageHandler(BaseHTTPRequestHandler):
         if filename in ("community_portal.html", "dispatch_dashboard.html", "patient_portal.html"):
             map_assets = b'''<script src="/map_picker.js?v=20261031"></script><style>.location-map{height:260px;min-height:220px;width:100%;border-radius:.75rem;z-index:0;background:#edf4f5}.leaflet-container{font:inherit}</style>'''
             body = body.replace(b"</head>", map_assets + b"</head>", 1)
+        if filename != "home.html":
+            body = re.sub(rb'<body([^>]*)>', lambda match: b'<body' + re.sub(rb' class="([^"]*)"', rb' class="app-shell \1"', match.group(1)) + b'>' if b'class="' in match.group(1) else b'<body class="app-shell"' + match.group(1) + b'>', body, count=1)
+            body = body.replace(b"</head>", b"<style>" + (BASE_DIR / "design.css").read_bytes() + b"</style></head>", 1)
         body = body.replace(b"</head>", b'<script defer src="/app_navigation.js"></script></head>', 1)
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")

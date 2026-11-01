@@ -3,7 +3,7 @@
   "regions": ["sin1"],
   "functions": {
     "api/index.py": {
-      "includeFiles": "{*.html,map_picker.js,app_navigation.js,service-worker.js,manifest.webmanifest,app-icon-192.png,app-icon-512.png,apple-touch-icon.png}",
+      "includeFiles": "{*.html,design.css,map_picker.js,app_navigation.js,service-worker.js,manifest.webmanifest,app-icon-192.png,app-icon-512.png,apple-touch-icon.png}",
       "maxDuration": 30
     }
   },

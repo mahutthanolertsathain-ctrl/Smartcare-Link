@@ -37,7 +37,10 @@ input:not([type=checkbox]):not([type=radio]), select, textarea { min-height: 44p
       <div class="flex items-center justify-between border-b border-red-100 px-5 py-4"><div><h2 class="font-bold text-red-800">🚨 แจ้งเหตุฉุกเฉิน</h2><p class="text-xs text-slate-500">ติดต่อผู้ป่วยโดยตรงเมื่อจำเป็น และรับทราบเหตุหลังตรวจสอบแล้ว</p></div><span class="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">LIVE</span></div>
       <div id="alerts" class="divide-y divide-slate-100"><p class="p-5 text-sm text-slate-500">กำลังโหลดรายการ…</p></div>
     </section>
-    <section class="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <section id="queue-list" class="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div id="demo-queue-banner" class="hidden border-b border-blue-200 bg-blue-50 px-5 py-4 text-sm text-blue-800">
+        <strong>กำลังแสดงคิวสำหรับเดโม</strong> · <a href="/nurse#queue-list" class="font-semibold underline">ดูคิวทั้งหมด</a>
+      </div>
       <div class="flex flex-wrap items-end justify-between gap-3 border-b border-slate-100 px-5 py-4"><div><h2 class="font-bold">คิวผู้ป่วย</h2><p class="text-xs text-slate-500">กด “เรียกคิว” เพื่อแจ้งผู้ป่วยที่หน้าคัดกรอง · ลำดับและเวลารอเป็นข้อมูลประกอบ เจ้าหน้าที่เป็นผู้กำหนดการดูแลจริง</p></div><label class="flex items-center gap-2 text-sm text-slate-600"><input id="show-completed" type="checkbox" onchange="loadQueue()">แสดงคิวที่เสร็จแล้ว</label></div>
       <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left text-sm"><thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-5 py-3">คิว</th><th class="px-5 py-3">HN</th><th class="px-5 py-3">อาการหลัก</th><th class="px-5 py-3">ระดับจากแบบประเมิน</th><th class="px-5 py-3">เวลาโดยประมาณ</th><th class="px-5 py-3">สถานะ / จัดการ</th></tr></thead><tbody id="queue-rows" class="divide-y divide-slate-100"><tr><td colspan="6" class="px-5 py-8 text-center text-slate-500">กำลังโหลดรายการ…</td></tr></tbody></table></div>
     </section>
@@ -45,6 +48,9 @@ input:not([type=checkbox]):not([type=radio]), select, textarea { min-height: 44p
   </main>
 <script>
 const API = '/api/v1';
+const demoQueueParam = new URLSearchParams(location.search).get('demo_queue') || '';
+const demoQueueId = /^\d+$/.test(demoQueueParam) ? Number(demoQueueParam) : null;
+if (demoQueueId) document.getElementById('demo-queue-banner').classList.remove('hidden');
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const statusNames = {waiting:'รอเรียก',calling:'เรียกแล้ว',in_progress:'กำลังตรวจ',done:'เสร็จแล้ว',no_show:'ไม่พบตัว',cancelled:'ยกเลิก',emergency:'ฉุกเฉิน'};
 const statusColors = {waiting:'bg-blue-50 text-blue-700',calling:'bg-violet-50 text-violet-700',in_progress:'bg-amber-50 text-amber-800',done:'bg-emerald-50 text-emerald-700',no_show:'bg-slate-100 text-slate-600',cancelled:'bg-slate-100 text-slate-500'};
@@ -53,9 +59,11 @@ function maskedId(id){const value=String(id||'');return value.length>4?'••�
 function thaiTime(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(+date)?esc(value):date.toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}
 async function loadQueue(){
   try{
-    const include=document.getElementById('show-completed').checked;
+    const include=Boolean(demoQueueId) || document.getElementById('show-completed').checked;
     const res=await fetch(`${API}/queue?include_completed=${include}`);if(!res.ok)throw Error('queue');
-    const {items}=await res.json();const visible=items.filter(x=>x.triage_level!=='Red');
+    const {items}=await res.json();
+    const visible=items.filter(x => x.triage_level !== 'Red' &&
+      (!demoQueueId || (x.id === demoQueueId && /^DEMO-[0-9A-F]{8}$/.test(x.patient_id))));
     document.getElementById('waiting-count').textContent=visible.filter(x=>x.status==='waiting').length;
     document.getElementById('active-count').textContent=visible.filter(x=>['calling','in_progress'].includes(x.status)).length;
     document.getElementById('queue-rows').innerHTML=visible.length?visible.map(x=>`<tr>

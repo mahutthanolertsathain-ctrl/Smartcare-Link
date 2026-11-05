@@ -64,6 +64,9 @@ def init_db():
     columns = {row["name"] for row in conn.execute("PRAGMA table_info(triage_records)")}
     if "status" not in columns:
         conn.execute("ALTER TABLE triage_records ADD COLUMN status TEXT NOT NULL DEFAULT 'waiting'")
+    if "request_key_hash" not in columns:
+        conn.execute("ALTER TABLE triage_records ADD COLUMN request_key_hash TEXT")
+    conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_triage_request_key ON triage_records(request_key_hash)")
     conn.execute("""CREATE TABLE IF NOT EXISTS emergency_alerts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT NOT NULL,
@@ -190,6 +193,7 @@ def init_db():
 
 def json_safe(row):
     item = dict(row)
+    item.pop("request_key_hash", None)
     if "sub_answers" in item:
         try:
             item["sub_answers"] = json.loads(item["sub_answers"] or "{}")
@@ -446,23 +450,38 @@ class TriageHandler(BaseHTTPRequestHandler):
             conn.close()
             return self.send_json({"items": [json_safe(row) for row in rows]})
         if parsed.path == "/api/v1/queue/status":
-            params = parse_qs(parsed.query)
-            try:
-                triage_id = int(params.get("triage_id", [""])[0])
-            except (TypeError, ValueError):
-                return self.send_json({"detail": "ต้องระบุรหัสคิว"}, 422)
-            patient_id = params.get("patient_id", [""])[0].strip()[:80]
-            if not patient_id:
-                return self.send_json({"detail": "ต้องระบุ HN"}, 422)
+            queue_key = self.headers.get("X-Queue-Key")
+            if queue_key is not None:
+                if not re.fullmatch(r"[0-9a-f]{32}", queue_key):
+                    return self.send_json({"detail": "รหัสเปิดบัตรคิวไม่ถูกต้อง"}, 422)
+                where = "request_key_hash=? AND queue_number IS NOT NULL"
+                args = (hashlib.sha256(queue_key.encode()).hexdigest(),)
+            else:
+                params = parse_qs(parsed.query)
+                try:
+                    triage_id = int(params.get("triage_id", [""])[0])
+                except (TypeError, ValueError):
+                    return self.send_json({"detail": "ต้องระบุรหัสคิว"}, 422)
+                patient_id = params.get("patient_id", [""])[0].strip()[:80]
+                if not patient_id:
+                    return self.send_json({"detail": "ต้องระบุ HN"}, 422)
+                where = "id=? AND patient_id=?"
+                args = (triage_id, patient_id)
             conn = db_connect()
-            row = conn.execute(
-                "SELECT id, patient_id, queue_number, estimated_time, status FROM triage_records WHERE id=? AND patient_id=?",
-                (triage_id, patient_id),
-            ).fetchone()
-            conn.close()
+            try:
+                row = conn.execute(
+                    f"SELECT id, queue_number, estimated_time, status, assessment_timestamp FROM triage_records WHERE {where}",
+                    args,
+                ).fetchone()
+            finally:
+                conn.close()
             if not row:
                 return self.send_json({"detail": "ไม่พบคิวนี้"}, 404)
-            return self.send_json({"triage_id": row["id"], "queue_number": row["queue_number"], "estimated_time": row["estimated_time"], "status": row["status"]})
+            status = row["status"]
+            if queue_key and status in ("waiting", "calling", "in_progress"):
+                if row["assessment_timestamp"][:10] != datetime.now(BANGKOK).date().isoformat():
+                    status = "expired"
+            return self.send_json({"triage_id": row["id"], "queue_number": row["queue_number"], "estimated_time": row["estimated_time"], "status": status})
         if parsed.path == "/api/v1/emergencies":
             include = parse_qs(parsed.query).get("include_resolved", ["false"])[0] == "true"
             where = "" if include else "WHERE status = 'active'"
@@ -695,6 +714,12 @@ class TriageHandler(BaseHTTPRequestHandler):
         level = result.get("triage_level")
         if not valid_patient_id(patient_id) or not category or not symptom or level not in ("Green", "Yellow", "Red"):
             return self.send_json({"detail": "กรุณาตรวจสอบข้อมูลผู้ป่วยและแบบประเมิน"}, 422)
+        request_key = data.get("request_key")
+        request_key_hash = None
+        if request_key is not None:
+            if not isinstance(request_key, str) or not re.fullmatch(r"[0-9a-f]{32}", request_key):
+                return self.send_json({"detail": "รหัสคำขอไม่ถูกต้อง"}, 422)
+            request_key_hash = hashlib.sha256(request_key.encode()).hexdigest()
         latitude, longitude = triage.get("latitude"), triage.get("longitude")
         if (latitude is None) != (longitude is None):
             return self.send_json({"detail":"พิกัดไม่ครบถ้วน"},422)
@@ -720,17 +745,32 @@ class TriageHandler(BaseHTTPRequestHandler):
             estimated = est.strftime("%H:%M")
         triage_cursor = conn.execute("""INSERT INTO triage_records (patient_id, assessment_timestamp,
             is_immediate_red_flag, main_category, symptom_name, sub_answers,
-            triage_level, recommended_action, queue_number, estimated_time, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
+            triage_level, recommended_action, queue_number, estimated_time, status, request_key_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(request_key_hash) DO NOTHING""", (
             patient_id, created_at, bool(triage.get("is_immediate_red_flag", False)),
             category, symptom, json.dumps(triage.get("sub_answers", {}), ensure_ascii=False),
-            level, str(result.get("recommended_action", ""))[:500], queue_number, estimated, status,
+            level, str(result.get("recommended_action", ""))[:500], queue_number, estimated, status, request_key_hash,
         ))
+        if triage_cursor.rowcount == 0:
+            existing = conn.execute(
+                "SELECT id, queue_number, estimated_time, triage_level FROM triage_records WHERE request_key_hash=? AND patient_id=?",
+                (request_key_hash, patient_id),
+            ).fetchone()
+            conn.close()
+            if not existing:
+                return self.send_json({"detail": "รหัสคำขอนี้ถูกใช้แล้ว"}, 409)
+            return self.send_json({
+                "status": "success", "message": "บันทึกข้อมูลแล้ว", "triage_id": existing["id"],
+                "queue_number": existing["queue_number"], "estimated_time": existing["estimated_time"],
+                "triage_level": existing["triage_level"],
+            })
+        triage_id = triage_cursor.lastrowid
         if level == "Red":
             cursor=conn.execute("INSERT INTO emergency_alerts (created_at, patient_id, alert_type, details, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)",(created_at,patient_id,"สัญญาณเตือนจากแบบประเมิน",symptom,latitude,longitude))
             assign_nearest_resource(conn,cursor.lastrowid,latitude,longitude)
         conn.commit(); conn.close()
-        return self.send_json({"status":"success","message":"บันทึกข้อมูลแล้ว","triage_id":triage_cursor.lastrowid,"queue_number":queue_number,"estimated_time":estimated,"triage_level":level})
+        return self.send_json({"status":"success","message":"บันทึกข้อมูลแล้ว","triage_id":triage_id,"queue_number":queue_number,"estimated_time":estimated,"triage_level":level})
 
     def do_DELETE(self):
         if not self.require_login(api=True):

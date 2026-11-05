@@ -12,6 +12,7 @@
 @media(max-width:900px){.screening-demo{padding:22px}.demo-window{padding:20px}.topnav{gap:16px}.journey-banner{grid-template-columns:1fr;gap:24px}}
 @media(max-width:620px){.topbar{gap:10px}.topnav{gap:0}.topnav .demo{display:none}.topnav>a.nav-screening{font-size:11px;padding:10px}.hero h1{font-size:36px;letter-spacing:-1px}.hero .actions{flex-direction:column}.hero .actions .button{width:100%;flex:auto}.screening-demo{padding:20px}.demo-window{padding:20px}.journey-banner{padding:24px 21px;margin-bottom:30px}.journey-steps{gap:12px}.journey-step h3{font-size:13px}.journey-step p{font-size:11px}.brand{font-size:16px;gap:8px}.brand-mark{width:35px;height:35px}}
 @media(max-width:360px){.brand{font-size:14px;gap:6px}.brand-mark{width:30px;height:30px}.topnav>a.nav-screening{font-size:10px;padding:9px 7px}}
+.queue-entry-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:16px}.queue-entry-links a{color:#167d77;font-size:14px;font-weight:750;text-decoration:underline;text-underline-offset:4px;padding:7px 0}
 </style></head><body>
 <svg aria-hidden="true" style="display:none"><defs>
 <symbol id="heart" viewBox="0 0 24 24"><path d="M20.5 4.7a5.5 5.5 0 0 0-7.8 0L12 5.4l-.7-.7a5.5 5.5 0 0 0-7.8 7.8L12 21l8.5-8.5a5.5 5.5 0 0 0 0-7.8Z"/><path d="M5 11h4l2-4 2 8 2-4h4"/></symbol>
@@ -33,6 +34,10 @@
 <h1>ประเมินอาการเบื้องต้น<br><em>รับคิวได้จากหน้าเว็บ</em></h1>
 <p class="hero-copy">เริ่มจากตอบคำถามอาการ ดูผลประเมินเบื้องต้น<br>และรับหมายเลขคิว เพื่อส่งต่อข้อมูลให้เจ้าหน้าที่<br>พร้อมติดตามการเรียกคิวเมื่อเปิดหน้าผลไว้</p>
 <div class="actions"><a class="button primary" href="/screening">เริ่มประเมินอาการ / รับคิว <svg aria-hidden="true"><use href="#arrow"/></svg></a><a class="button" href="#roles">เลือกหน้าใช้งานอื่น</a></div>
+<div class="queue-entry-links" aria-label="เมนูคิวเพิ่มเติม">
+  <a href="/screening?queue=1">ดูคิวของฉัน</a>
+  <a href="/screening?demo=1">ลองเดโมรับคิว</a>
+</div>
 <p class="hero-note">ทดลองด้วย HN สมมติ เช่น DEMO-001 · ใช้ได้ทั้งมือถือและคอม<br>ผลประเมินเป็นข้อมูลเบื้องต้น เจ้าหน้าที่เป็นผู้ยืนยันการดูแล</p></div>
 <div class="screening-demo" role="img" aria-label="ภาพจำลองผลประเมินและบัตรคิว F-001 ไม่ใช่คิวที่ออกให้จริง"><div class="demo-heading"><p>ประเมินอาการ → รับคิว</p><span>ภาพตัวอย่าง</span></div><div class="demo-window"><p class="mini-heading">ตัวอย่างหลังทำแบบประเมิน</p><h2>หมายเลขคิวของคุณ</h2><div class="demo-progress"></div><div class="sample-ticket"><div><small>คิวตัวอย่างสำหรับสาธิต</small><strong>F-001</strong><small>รอเจ้าหน้าที่เรียกคิว</small></div><span class="ticket-icon"><svg aria-hidden="true"><use href="#heart"/></svg></span></div><p class="demo-status"><span class="dot"></span>ติดตามสถานะจากหน้าผลประเมิน</p><p class="demo-caption">เมื่อเจ้าหน้าที่กดเรียกคิว ระบบจะแสดงข้อความบนหน้าผลประเมินที่เปิดไว้</p></div></div></section>
 <section class="journey-banner" aria-labelledby="screening-journey-title"><div><h2 id="screening-journey-title">ลองเส้นทางการรับคิว<br>ตั้งแต่ผู้ป่วยถึงเจ้าหน้าที่</h2><p>ฟีเจอร์หลักที่อยากให้คุณได้ทดลอง</p></div><div class="journey-steps"><article class="journey-step"><span>01</span><h3>ตอบคำถามอาการ</h3><p>กรอก HN สมมติ แล้วทำแบบประเมินทีละขั้น</p></article><article class="journey-step"><span>02</span><h3>รับผลและคิว</h3><p>ดูผลเบื้องต้นและคิวตามเงื่อนไขของแบบประเมิน</p></article><article class="journey-step"><span>03</span><h3>ติดตามการเรียก</h3><p>เปิดหน้าผลไว้ และทดลองเรียกคิวจากบอร์ดเจ้าหน้าที่</p></article></div></section>

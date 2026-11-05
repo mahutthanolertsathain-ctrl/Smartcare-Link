@@ -51,7 +51,7 @@ _SCHEMA_OBJECTS = [
     "call_signals", "training_progress", "app_users", "app_sessions",
     "login_attempts", "idx_triage_status", "idx_alert_status",
     "idx_vitals_patient", "idx_visits_status", "idx_call_signals",
-    "idx_login_attempts",
+    "idx_login_attempts", "idx_triage_request_key",
 ]
 _ID_TABLES = {
     "app_users",
@@ -79,6 +79,8 @@ _SCHEMA = (
         estimated_time TEXT,
         status TEXT NOT NULL DEFAULT 'waiting'
     )""",
+    "ALTER TABLE triage_records ADD COLUMN IF NOT EXISTS request_key_hash TEXT",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_triage_request_key ON triage_records(request_key_hash)",
     """CREATE TABLE IF NOT EXISTS emergency_alerts (
         id BIGSERIAL PRIMARY KEY,
         created_at TEXT NOT NULL,

@@ -22,6 +22,7 @@ body { font-family: Tahoma, Arial, sans-serif; }
         <p class="text-xs opacity-80">โรงพยาบาลดิจิทัล</p>
         <div class="mt-3 flex flex-wrap justify-center gap-2">
             <a href="/" class="rounded-lg bg-white/15 px-4 py-2 text-sm font-bold text-white shadow hover:bg-white/25">← เลือกหน้าใช้งาน</a>
+            <a href="/screening?queue=1" class="rounded-lg bg-white/15 px-4 py-2 text-sm font-bold text-white shadow hover:bg-white/25">ดูคิวของฉัน</a>
             <a href="/patient#sos" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white shadow hover:bg-red-700">🚨 ผู้ป่วย / SOS</a>
         </div>
     </header>
@@ -39,16 +40,22 @@ body { font-family: Tahoma, Arial, sans-serif; }
         </div>
 
         <div id="step-1" class="step-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <p id="queue-entry-message" class="hidden mb-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-800" role="status"></p>
             <h2 class="text-xl font-bold text-slate-800 mb-2 text-center">ยินดีต้อนรับสู่จุดคัดกรอง</h2>
-            <p class="text-sm text-slate-500 mb-6 text-center">กรุณากรอกเลขประจำตัวผู้ป่วย (HN) หรือเลขบัตรประชาชน เพื่อเริ่มต้น</p>
+            <p class="text-sm text-slate-500 mb-6 text-center">กรอก HN สมมติเพื่อทดลองประเมินอาการและรับคิว</p>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">เลขประจำตัวผู้ป่วย (HN) / เลขบัตรประชาชน</label>
-                    <input type="text" id="patient-id" placeholder="ตัวอย่าง: HN123456" class="w-full p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
+                    <label for="patient-id" class="block text-sm font-semibold text-slate-700 mb-1">HN สำหรับทดลอง</label>
+                    <input type="text" id="patient-id" placeholder="ตัวอย่าง: DEMO-001" maxlength="80" class="w-full p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
                 </div>
                 <button onclick="goToStep(2)" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-700 transition">
                     เริ่มทำแบบประเมิน
                 </button>
+                <div id="queue-demo-intro" class="hidden rounded-xl border border-blue-200 bg-blue-50 p-4">
+                    <h3 class="font-bold text-blue-800">ทดลองรับคิวด้วยข้อมูลสมมติ</h3>
+                    <p class="mt-2 text-sm text-slate-600">ระบบสร้าง HN สำหรับเดโมให้แล้ว ลองใช้ตัวอย่างอาการทั่วไป จากนั้นส่งแบบประเมินเพื่อรับคิว</p>
+                    <button type="button" onclick="fillDemoAssessment()" class="mt-3 rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-bold text-blue-800">ใช้ตัวอย่างอาการ</button>
+                </div>
             </div>
         </div>
 
@@ -97,14 +104,15 @@ body { font-family: Tahoma, Arial, sans-serif; }
             <h2 class="text-lg font-bold text-slate-800 mb-1">ซักประวัติเพิ่มเติม</h2>
             <p id="sub-symptom-title" class="text-xs text-blue-600 font-semibold mb-4 bg-blue-50 p-2 rounded inline-block"></p>
             <div id="dynamic-questions-container" class="space-y-6"></div>
-            <button onclick="submitAssessment()" class="w-full mt-6 bg-blue-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-700 transition">ประมวลผลการคัดกรอง</button>
+            <button id="submit-assessment" onclick="submitAssessment()" class="w-full mt-6 bg-blue-600 text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-blue-700 transition">ส่งแบบประเมิน / รับคิว</button>
+            <p id="assessment-message" class="mt-3 text-sm text-slate-600" role="status" aria-live="polite"></p>
             <button onclick="goToStep(3)" class="w-full text-center text-slate-400 mt-4 text-sm underline">⬅️ ย้อนกลับ</button>
         </div>
 
         <div id="step-5" class="step-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 text-center hidden">
             <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-1">บันทึกข้อมูลสำเร็จ</h2>
-            <p class="text-sm text-slate-500 mb-4">ส่งข้อมูลให้เจ้าหน้าที่เพื่อทบทวนแล้ว ระดับจากแบบประเมินไม่ใช่การวินิจฉัย</p>
+            <h2 class="text-2xl font-bold text-slate-800 mb-1">บัตรคิวของฉัน</h2>
+            <p id="queue-card-description" class="text-sm text-slate-500 mb-4"></p>
             
             <div id="triage-result-box" class="p-4 rounded-xl border mb-6 inline-block w-full text-left">
             <span class="text-xs font-semibold uppercase tracking-wider opacity-80">ระดับเบื้องต้นจากแบบประเมิน · เจ้าหน้าที่เป็นผู้ยืนยัน</span>
@@ -122,7 +130,7 @@ body { font-family: Tahoma, Arial, sans-serif; }
                 <p id="queue-number-display" class="text-5xl font-extrabold text-slate-700 my-2">กำลังรับคิว...</p>
                 <div class="bg-blue-100 p-3 rounded-lg mt-4 inline-block w-full border border-blue-200">
                     <p class="text-sm text-blue-800 font-medium">เวลาเข้าตรวจโดยประมาณ</p>
-                    <p class="text-2xl font-bold text-blue-700"><span id="queue-time-display">-</span> น.</p>
+                    <p id="queue-time-display" class="text-2xl font-bold text-blue-700">—</p>
                 </div>
             </div>
 
@@ -138,9 +146,13 @@ body { font-family: Tahoma, Arial, sans-serif; }
                 <p id="queue-notification-help" class="mt-2 text-xs text-slate-500">เมื่ออนุญาตแล้ว ระบบจะแจ้งเตือนขณะที่เปิดหน้านี้ไว้</p>
             </div>
 
-            <button onclick="resetForm()" class="w-full bg-slate-800 text-white p-3 rounded-xl font-bold hover:bg-slate-900 transition">
-                เสร็จสิ้น / กลับหน้าแรก
-            </button>
+            <div id="queue-demo-guide" class="hidden mb-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-left">
+                <h3 class="font-bold text-blue-800">ลองเรียกคิวจากอีกแท็บ</h3>
+                <p class="mt-2 text-sm text-slate-600">เปิดบอร์ดเจ้าหน้าที่ กด “เรียกคิว” ที่คิวตัวอย่างนี้ แล้วกลับมาดูสถานะบนบัตรคิว</p>
+                <a id="queue-demo-board" target="_blank" rel="noopener" class="mt-3 inline-block rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-bold text-blue-800">เปิดบอร์ดเจ้าหน้าที่ในแท็บใหม่ ↗</a>
+            </div>
+            <button type="button" onclick="resetForm()" class="w-full bg-slate-800 text-white p-3 rounded-xl font-bold hover:bg-slate-900 transition">เริ่มแบบประเมินใหม่</button>
+            <button id="forget-queue" type="button" onclick="forgetQueue()" class="mt-2 w-full text-center text-slate-500 text-sm underline">ลืมบัตรคิวบนเครื่องนี้</button>
         </div>
 
         <div id="screen-emergency" class="step-card bg-red-600 p-6 rounded-2xl shadow-xl text-white text-center hidden">
@@ -161,11 +173,56 @@ body { font-family: Tahoma, Arial, sans-serif; }
 
     <script>
         let patientData = { hn: '', category: '', symptomName: '', answers: {} };
-        let queueWatchTimer = null;
-        let queueWatchId = null;
-        let queueWatchPatientId = '';
-        let lastQueueStatus = null;
+        const savedQueueStorageKey = 'smartcare.latestQueue';
+        const pageParams = new URLSearchParams(location.search);
+        let demoMode = pageParams.get('demo') === '1';
+        let queueWatch = null;
+        let displayedQueueKey = null;
+        let assessmentRequest = null;
+        let submitting = false;
         let queueServiceWorkerRegistration = null;
+
+        function newRequestKey() {
+            const bytes = crypto.getRandomValues(new Uint8Array(16));
+            return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        function readSavedQueue() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(savedQueueStorageKey));
+                return /^[0-9a-f]{32}$/.test(saved?.key || '') ? saved : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function saveQueue(saved) {
+            try {
+                localStorage.setItem(savedQueueStorageKey, JSON.stringify(saved));
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function forgetQueue() {
+            if (readSavedQueue()?.key === displayedQueueKey) {
+                try { localStorage.removeItem(savedQueueStorageKey); } catch (_) {}
+            }
+            resetForm();
+        }
+
+        async function requestJson(url, options = {}) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 20000);
+            try {
+                const response = await fetch(url, {...options, signal: controller.signal});
+                const data = await response.json().catch(() => null);
+                return {response, data};
+            } finally {
+                clearTimeout(timer);
+            }
+        }
 
         if('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js', {scope: '/'})
@@ -174,11 +231,8 @@ body { font-family: Tahoma, Arial, sans-serif; }
         }
 
         function stopQueueWatch() {
-            if(queueWatchTimer) clearInterval(queueWatchTimer);
-            queueWatchTimer = null;
-            queueWatchId = null;
-            queueWatchPatientId = '';
-            lastQueueStatus = null;
+            if (queueWatch) clearInterval(queueWatch.timer);
+            queueWatch = null;
         }
 
         function queueNotice(title, detail, called = false) {
@@ -219,19 +273,20 @@ body { font-family: Tahoma, Arial, sans-serif; }
             }
         }
 
-        async function notifyQueueCalled(queueNumber) {
+        async function notifyQueueCalled(queueNumber, watch) {
             queueNotice(`ถึงคิว ${queueNumber} แล้ว`, 'กรุณาไปที่จุดบริการและแสดงหมายเลขคิวนี้แก่เจ้าหน้าที่', true);
             try { if(navigator.vibrate) navigator.vibrate([250, 120, 250]); } catch(_) {}
             if('Notification' in window && Notification.permission === 'granted') {
                 try {
                     const options = {
                         body: 'กรุณาไปที่จุดบริการและแสดงหมายเลขคิวแก่เจ้าหน้าที่',
-                        tag: `triage-queue-${queueWatchId}`,
+                        tag: 'triage-queue-' + watch.triageId,
                         icon: '/app-icon-192.png',
                         badge: '/app-icon-192.png',
-                        data: {url: '/screening'}
+                        data: {url: '/screening?queue=1'}
                     };
                     const registration = queueServiceWorkerRegistration || (('serviceWorker' in navigator) ? await navigator.serviceWorker.ready : null);
+                    if (queueWatch !== watch || watch.status !== "calling") return;
                     if(registration && registration.showNotification) {
                         await registration.showNotification(`ถึงคิว ${queueNumber} แล้ว`, options);
                     } else {
@@ -241,48 +296,99 @@ body { font-family: Tahoma, Arial, sans-serif; }
             }
         }
 
-        async function checkQueueStatus() {
-            if(!queueWatchId || !queueWatchPatientId) return;
-            try {
-                const params = new URLSearchParams({triage_id: queueWatchId, patient_id: queueWatchPatientId});
-                const response = await fetch(`/api/v1/queue/status?${params}`, {cache: 'no-store'});
-                if(!response.ok) throw new Error('อ่านสถานะคิวไม่ได้');
-                const data = await response.json();
-                if(data.status === 'calling' && lastQueueStatus !== 'calling') {
-                    notifyQueueCalled(data.queue_number || document.getElementById('queue-number-display').textContent);
-                } else if(data.status === 'waiting' && lastQueueStatus !== 'waiting') {
-                    queueNotice('กำลังรอเรียกคิว', 'เปิดหน้านี้ไว้ระหว่างรอ ระบบจะตรวจสอบคิวให้อัตโนมัติ');
-                } else if(data.status === 'in_progress') {
-                    if(!['calling', 'in_progress'].includes(lastQueueStatus)) {
-                        notifyQueueCalled(data.queue_number || document.getElementById('queue-number-display').textContent);
-                    }
-                    queueNotice('เจ้าหน้าที่กำลังให้บริการ', 'กรุณารอรับบริการตามคำแนะนำของเจ้าหน้าที่', true);
-                } else if(data.status === 'done') {
-                    queueNotice('คิวนี้เสร็จสิ้นแล้ว', 'หากต้องการความช่วยเหลือเพิ่มเติม กรุณาติดต่อเจ้าหน้าที่');
-                    stopQueueWatch();
-                } else if(data.status === 'no_show') {
-                    queueNotice('เจ้าหน้าที่เรียกคิวแล้วแต่ไม่พบตัว', 'กรุณาติดต่อเจ้าหน้าที่เพื่อขอรับคิวอีกครั้ง');
-                    stopQueueWatch();
-                } else if(data.status === 'cancelled') {
-                    queueNotice('คิวนี้ถูกยกเลิก', 'กรุณาติดต่อเจ้าหน้าที่หากต้องการรับบริการ');
-                    stopQueueWatch();
-                }
-                lastQueueStatus = data.status;
-            } catch(_) {
-                document.getElementById('queue-call-detail').textContent = 'กำลังเชื่อมต่อเพื่อตรวจสอบคิวอีกครั้ง…';
+        const queueStates = {
+            waiting: ['กำลังรอเรียกคิว', 'เปิดบัตรคิวนี้ไว้ ระบบจะตรวจสอบสถานะให้อัตโนมัติ'],
+            calling: ['ถึงคิวแล้ว', 'แสดงหมายเลขคิวนี้แก่เจ้าหน้าที่'],
+            in_progress: ['กำลังรับบริการ', 'กรุณารอรับบริการตามคำแนะนำของเจ้าหน้าที่'],
+            done: ['คิวนี้เสร็จสิ้นแล้ว', 'หากต้องการความช่วยเหลือเพิ่มเติม กรุณาติดต่อเจ้าหน้าที่'],
+            no_show: ['เรียกคิวแล้วแต่ไม่พบตัว', 'กรุณาติดต่อเจ้าหน้าที่เพื่อขอรับคิวอีกครั้ง'],
+            cancelled: ['คิวนี้ถูกยกเลิก', 'กรุณาติดต่อเจ้าหน้าที่หากต้องการรับบริการ'],
+            expired: ['คิวนี้หมดวันให้บริการแล้ว', 'เริ่มแบบประเมินใหม่เพื่อรับคิวของวันนี้']
+        };
+
+        function updateQueueCard(data, demo) {
+            document.getElementById('queue-number-display').textContent = data.queue_number || '—';
+            document.getElementById('queue-time-display').textContent = data.estimated_time ? data.estimated_time + ' น.' : '—';
+            const demoGuide = document.getElementById('queue-demo-guide');
+            demoGuide.classList.toggle('hidden', !demo || !data.triage_id);
+            if (demo && data.triage_id) {
+                document.getElementById('queue-demo-board').href = '/nurse?demo_queue=' + encodeURIComponent(data.triage_id) + '#queue-list';
             }
         }
 
-        function startQueueWatch(triageId, patientId, queueNumber) {
-            stopQueueWatch();
-            if(!triageId || !queueNumber) return;
-            queueWatchId = triageId;
-            queueWatchPatientId = patientId;
-            document.getElementById('queue-call-notice').classList.remove('hidden');
-            queueNotice('กำลังรอเรียกคิว', 'เปิดหน้านี้ไว้ระหว่างรอ ระบบจะตรวจสอบคิวให้อัตโนมัติ');
-            checkQueueStatus();
-            queueWatchTimer = setInterval(checkQueueStatus, 5000);
+        async function checkQueueStatus(watch) {
+            if (queueWatch !== watch || watch.pending) return;
+            watch.pending = true;
+            try {
+                const {response, data} = await requestJson('/api/v1/queue/status', {
+                    cache: 'no-store',
+                    headers: {'X-Queue-Key': watch.key}
+                });
+                if (queueWatch !== watch) return;
+                if (response.status === 404) {
+                    updateQueueCard({}, false);
+                    queueNotice('ไม่พบคิวนี้', 'คิวอาจถูกลบจากระบบ คุณสามารถลืมบัตรนี้หรือเริ่มแบบประเมินใหม่');
+                    stopQueueWatch();
+                    document.getElementById('queue-notification-button').hidden = true;
+                    document.getElementById('queue-notification-help').hidden = true;
+                    return;
+                }
+                if (!response.ok || !data?.queue_number || !Object.hasOwn(queueStates, data.status)) {
+                    throw new Error('อ่านสถานะคิวไม่ได้');
+                }
+                const previousStatus = watch.status;
+                watch.status = data.status;
+                watch.triageId = data.triage_id;
+                if (previousStatus === null || previousStatus !== watch.status || watch.failed) {
+                    updateQueueCard(data, watch.demo);
+                    const [title, detail] = queueStates[watch.status];
+                    const called = watch.status === 'calling';
+                    if (called && previousStatus !== null && previousStatus !== 'calling') {
+                        notifyQueueCalled(data.queue_number, watch);
+                    } else {
+                        queueNotice(called ? 'ถึงคิว ' + data.queue_number + ' แล้ว' : title, detail,
+                            called || watch.status === 'in_progress');
+                    }
+                    watch.failed = false;
+                }
+                if (!['waiting', 'calling', 'in_progress'].includes(watch.status)) {
+                    stopQueueWatch();
+                    document.getElementById('queue-notification-button').hidden = true;
+                    document.getElementById('queue-notification-help').hidden = true;
+                }
+            } catch (_) {
+                if (queueWatch === watch) {
+                    watch.failed = true;
+                    document.getElementById('queue-call-detail').textContent = 'เชื่อมต่อไม่ได้ กำลังลองตรวจสอบคิวอีกครั้ง…';
+                }
+            } finally {
+                watch.pending = false;
+            }
         }
+
+        function openQueueCard(saved, data = null, persisted = true) {
+            stopQueueWatch();
+            displayedQueueKey = saved.key;
+            document.getElementById('queue-card-description').textContent = persisted
+                ? 'กลับมาดูคิวนี้ได้จากเมนู “ดูคิวของฉัน” บนเบราว์เซอร์นี้'
+                : 'เบราว์เซอร์นี้เก็บบัตรคิวไม่ได้ กรุณาเปิดหน้านี้ไว้';
+            document.getElementById('triage-result-box').classList.toggle('hidden', !data);
+            document.getElementById('forget-queue').hidden = !persisted;
+            document.getElementById('queue-notification-button').hidden = false;
+            document.getElementById('queue-notification-help').hidden = false;
+            updateQueueCard(data || {}, saved.demo);
+            goToStep(5);
+            if (!data) document.getElementById('progress-container').classList.add('hidden');
+            queueNotice(data ? 'กำลังรอเรียกคิว' : 'กำลังเปิดบัตรคิว', 'กำลังตรวจสอบสถานะจากระบบ…');
+            const watch = {key: saved.key, demo: saved.demo, status: data ? 'waiting' : null, failed: true, pending: false};
+            queueWatch = watch;
+            watch.timer = setInterval(() => checkQueueStatus(watch), 5000);
+            checkQueueStatus(watch);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && queueWatch) checkQueueStatus(queueWatch);
+        });
 
         const subQuestionData = {
             'General': [
@@ -306,10 +412,13 @@ body { font-family: Tahoma, Arial, sans-serif; }
         };
 
         function goToStep(stepNumber) {
+            if (submitting) return;
             if(stepNumber === 2 && !document.getElementById('patient-id').value.trim()) {
                 alert('กรุณากรอกเลข HN หรือเลขประจำตัวก่อนเริ่มประเมิน');
                 return;
             }
+            document.getElementById('assessment-message').textContent = '';
+            document.getElementById('submit-assessment').textContent = 'ส่งแบบประเมิน / รับคิว';
             document.querySelectorAll('.step-card').forEach(card => card.classList.add('hidden'));
             document.getElementById(`step-${stepNumber}`).classList.remove('hidden');
 
@@ -348,7 +457,7 @@ body { font-family: Tahoma, Arial, sans-serif; }
         }
 
         function selectSymptom(category, name) {
-            patientData.hn = document.getElementById('patient-id').value || "ไม่ระบุ HN";
+            patientData.hn = document.getElementById('patient-id').value.trim();
             patientData.category = category;
             patientData.symptomName = name;
 
@@ -381,7 +490,8 @@ body { font-family: Tahoma, Arial, sans-serif; }
             });
         }
 
-        function submitAssessment() {
+        async function submitAssessment() {
+            if (submitting) return;
             const category = patientData.category;
             const questions = subQuestionData[category] || [];
             const unanswered = questions.some(q => q.type === 'radio'
@@ -436,39 +546,64 @@ body { font-family: Tahoma, Arial, sans-serif; }
                 computed_result: { triage_level: level, recommended_action: actionText }
             };
 
-            const sendAssessment = async () => {
-                if(level === 'Red' && navigator.geolocation) {
+            const signature = JSON.stringify([payload.patient_id, payload.triage_data, payload.computed_result]);
+            if (assessmentRequest?.signature !== signature) {
+                assessmentRequest = {signature, key: newRequestKey()};
+            }
+            payload.request_key = assessmentRequest.key;
+
+            const button = document.getElementById('submit-assessment');
+            const message = document.getElementById('assessment-message');
+            submitting = true;
+            button.disabled = true;
+            button.classList.add('is-working');
+            button.textContent = level === 'Red' ? 'กำลังส่งข้อมูล…' : 'กำลังออกคิว…';
+            message.textContent = '';
+            let data;
+            try {
+                if (level === 'Red' && navigator.geolocation) {
                     try {
                         const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, {enableHighAccuracy:true, timeout:5000, maximumAge:30000}));
                         payload.triage_data.latitude = position.coords.latitude;
                         payload.triage_data.longitude = position.coords.longitude;
-                    } catch(_) {}
+                    } catch (_) {}
                 }
-                const response = await fetch('/api/v1/triage', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                const result = await requestJson('/api/v1/triage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
                 });
-                if(!response.ok) throw new Error('บันทึกข้อมูลไม่สำเร็จ');
-                return response.json();
-            };
-            sendAssessment()
-            .then(data => {
-                if (level === 'Red') {
-                    triggerEmergency('สัญญาณเตือนจากแบบประเมิน', false);
-                } else {
-                    if(data.queue_number) document.getElementById('queue-number-display').innerText = data.queue_number;
-                    if(data.estimated_time) document.getElementById('queue-time-display').innerText = data.estimated_time;
-                    startQueueWatch(data.triage_id, patientData.hn, data.queue_number);
-                    displayTriageResult(level, actionText);
-                    goToStep(5);
+                if (!result.response.ok || !result.data?.triage_id) {
+                    throw new Error(result.response.status === 422 && result.data?.detail
+                        ? result.data.detail : 'ส่งข้อมูลไม่สำเร็จ คำตอบยังอยู่ กดลองส่งอีกครั้งได้');
                 }
-            })
-            .catch(error => {
-                console.error('เชื่อมต่อไม่ได้:', error);
-                if (level === 'Red') { triggerEmergency('สัญญาณเตือนจากแบบประเมิน'); } 
-                else {
-                    alert('ส่งข้อมูลไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง หรือแจ้งเจ้าหน้าที่ที่เคาน์เตอร์');
+                data = result.data;
+                if (level !== 'Red' && !data.queue_number) {
+                    data = null;
+                    throw new Error('ยังไม่ได้รับหมายเลขคิว กดลองส่งอีกครั้งได้');
                 }
-            });
+            } catch (error) {
+                message.textContent = error.name === 'AbortError' || error instanceof TypeError
+                    ? 'เชื่อมต่อไม่สำเร็จ คำตอบยังอยู่ กดลองส่งอีกครั้งได้'
+                    : error.message;
+                button.textContent = 'ลองส่งอีกครั้ง';
+            } finally {
+                submitting = false;
+                button.disabled = false;
+                button.classList.remove('is-working');
+            }
+
+            if (level === 'Red') {
+                triggerEmergency('สัญญาณเตือนจากแบบประเมิน', !data);
+                return;
+            }
+            if (!data) return;
+
+            const saved = {key: assessmentRequest.key, demo: demoMode};
+            const persisted = saveQueue(saved);
+            if (persisted) history.replaceState(null, '', '/screening?queue=1');
+            displayTriageResult(data.triage_level, actionText);
+            openQueueCard(saved, data, persisted);
         }
 
         function displayTriageResult(level, actionText) {
@@ -492,15 +627,42 @@ body { font-family: Tahoma, Arial, sans-serif; }
             actionEl.innerText = actionText;
         }
 
+        function fillDemoAssessment() {
+            selectSymptom('General', 'อาการทั่วไป (เดโม)');
+            document.querySelector('#dynamic-questions-container input[name="q1"]').checked = true;
+        }
+
         function resetForm() {
             stopQueueWatch();
+            displayedQueueKey = null;
+            assessmentRequest = null;
+            demoMode = false;
+            history.replaceState(null, '', '/screening');
+            document.getElementById('queue-demo-intro').classList.add('hidden');
+            document.getElementById('queue-entry-message').classList.add('hidden');
             document.getElementById('queue-call-notice').classList.add('hidden');
-            document.getElementById('patient-id').value = '';
+            const input = document.getElementById('patient-id');
+            input.readOnly = false;
+            input.value = '';
             document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(cb => cb.checked = false);
             patientData = { hn: '', category: '', symptomName: '', answers: {} };
-            document.getElementById('queue-number-display').innerText = 'กำลังรับคิว...';
-            document.getElementById('queue-time-display').innerText = '-';
             goToStep(1);
+        }
+
+        if (pageParams.get('queue') === '1') {
+            const saved = readSavedQueue();
+            if (saved) {
+                openQueueCard(saved);
+            } else {
+                const message = document.getElementById('queue-entry-message');
+                message.textContent = 'ยังไม่มีบัตรคิวที่บันทึกในเบราว์เซอร์นี้ เริ่มทำแบบประเมินเพื่อรับคิวได้เลย';
+                message.classList.remove('hidden');
+            }
+        } else if (demoMode) {
+            const input = document.getElementById('patient-id');
+            input.value = 'DEMO-' + newRequestKey().slice(0, 8).toUpperCase();
+            input.readOnly = true;
+            document.getElementById('queue-demo-intro').classList.remove('hidden');
         }
     </script>
 </body>

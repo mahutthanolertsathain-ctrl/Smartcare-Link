@@ -42,7 +42,24 @@
   <a href="#roles">เลือกหน้าใช้งานอื่น</a>
 </div>
 <p class="hero-note">ทดลองด้วย HN สมมติ เช่น DEMO-001 · ใช้ได้ทั้งมือถือและคอม<br>ผลประเมินเป็นข้อมูลเบื้องต้น เจ้าหน้าที่เป็นผู้ยืนยันการดูแล</p></div>
-<div class="screening-demo" role="img" aria-label="ภาพจำลองผลประเมินและบัตรคิว F-001 ไม่ใช่คิวที่ออกให้จริง"><div class="demo-heading"><p>ประเมินอาการ → รับคิว</p><span>ภาพตัวอย่าง</span></div><div class="demo-window"><p class="mini-heading">ตัวอย่างหลังทำแบบประเมิน</p><h2>หมายเลขคิวของคุณ</h2><div class="demo-progress"></div><div class="sample-ticket"><div><small>คิวตัวอย่างสำหรับสาธิต</small><strong>F-001</strong><small>รอเจ้าหน้าที่เรียกคิว</small></div><span class="ticket-icon"><svg aria-hidden="true"><use href="#heart"/></svg></span></div><p class="demo-status"><span class="dot"></span>ติดตามสถานะจากหน้าผลประเมิน</p><p class="demo-caption">เมื่อเจ้าหน้าที่กดเรียกคิว ระบบจะแสดงข้อความบนหน้าผลประเมินที่เปิดไว้</p></div></div></section>
+<section class="screening-demo" aria-labelledby="home-ticket-title">
+    <div class="demo-heading"><p>ประเมินอาการ → รับคิว</p><span id="home-ticket-badge">ภาพตัวอย่าง</span></div>
+    <div class="demo-window">
+        <p class="mini-heading" id="home-ticket-heading">ตัวอย่างหลังทำแบบประเมิน</p>
+        <h2 id="home-ticket-title">หมายเลขคิวของคุณ</h2>
+        <div class="demo-progress"></div>
+        <div class="sample-ticket">
+            <div role="status">
+                <small id="home-ticket-label">คิวตัวอย่างสำหรับสาธิต</small>
+                <strong id="home-ticket-number">F-001</strong>
+                <small id="home-ticket-status">รอเจ้าหน้าที่เรียกคิว</small>
+            </div>
+            <span class="ticket-icon"><svg aria-hidden="true"><use href="#heart"/></svg></span>
+        </div>
+        <p class="demo-status"><span class="dot"></span><span id="home-ticket-hint">ติดตามสถานะจากหน้าผลประเมิน</span><a id="home-ticket-link" href="/screening?queue=1" hidden>เปิดบัตรคิวของฉัน →</a></p>
+        <p class="demo-caption" id="home-ticket-caption">เมื่อเจ้าหน้าที่กดเรียกคิว ระบบจะแสดงข้อความบนหน้าผลประเมินที่เปิดไว้</p>
+    </div>
+</section></section>
 <section class="journey-banner" aria-labelledby="screening-journey-title"><div><h2 id="screening-journey-title">ลองเส้นทางการรับคิว<br>ตั้งแต่ผู้ป่วยถึงเจ้าหน้าที่</h2><p>ฟีเจอร์หลักที่อยากให้คุณได้ทดลอง</p></div><div class="journey-steps"><article class="journey-step"><span>01</span><h3>ตอบคำถามอาการ</h3><p>กรอก HN สมมติ แล้วทำแบบประเมินทีละขั้น</p></article><article class="journey-step"><span>02</span><h3>รับผลและคิว</h3><p>ดูผลเบื้องต้นและคิวตามเงื่อนไขของแบบประเมิน</p></article><article class="journey-step"><span>03</span><h3>ติดตามการเรียก</h3><p>เปิดหน้าผลไว้ และทดลองเรียกคิวจากบอร์ดเจ้าหน้าที่</p></article></div></section>
 <section class="section" id="roles"><div class="section-top"><div><p class="eyebrow">YOUR SPACE TO CARE</p><h2>เลือกพื้นที่การใช้งานของคุณ</h2><p>เมนูที่เกี่ยวข้องกับแต่ละบทบาท อยู่ในที่เดียว</p></div><span class="section-number">01 / EXPLORE</span></div><div class="roles">
 <a class="role patient" href="/patient"><span class="role-icon"><svg aria-hidden="true"><use href="#person"/></svg></span><h3>ผู้ป่วยและญาติ</h3><p>ดูข้อมูลสุขภาพ ขอเยี่ยมบ้าน และแจ้ง SOS</p><span class="role-link">เข้าสู่หน้าผู้ป่วย<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role community" href="/community"><span class="role-icon"><svg aria-hidden="true"><use href="#leaf"/></svg></span><h3>อสม.</h3><p>ทะเบียนผู้ป่วย บันทึกค่าวัด และติดตามการเยี่ยมบ้าน</p><span class="role-link">เข้างาน อสม.<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role nurse" href="/nurse"><span class="role-icon"><svg aria-hidden="true"><use href="#hospital"/></svg></span><h3>รพ.สต. / รพช.</h3><p>จัดการคิว รับแจ้งเหตุ และประสานการดูแลผู้ป่วย</p><span class="role-link">เข้าบอร์ดเจ้าหน้าที่<svg aria-hidden="true"><use href="#arrow"/></svg></span></a><a class="role dispatch" href="/dispatch"><span class="role-icon"><svg aria-hidden="true"><use href="#ambulance"/></svg></span><h3>เทศบาล</h3><p>ดูเหตุ SOS พร้อมตำแหน่ง และจัดการหน่วยช่วยเหลือ</p><span class="role-link">เข้าศูนย์ประสานงาน<svg aria-hidden="true"><use href="#arrow"/></svg></span></a>
@@ -51,5 +68,102 @@
 <section class="section" id="about"><div class="purpose-band"><div><p class="eyebrow">BUILT TO LEARN. DESIGNED TO CARE.</p><h2>ต้นแบบเล็ก ๆ<br>จากความตั้งใจเรียนรู้</h2></div><div><p>Smartcare Link จัดทำขึ้นเพื่อศึกษาและสาธิตว่าการพัฒนาเว็บและฐานข้อมูลสามารถช่วยเชื่อมการดูแลสุขภาพชุมชนได้อย่างไร ตั้งแต่การคัดกรอง การติดตามสุขภาพ ไปจนถึงการประสานความช่วยเหลือ โดยใช้ข้อมูลสมมติในการทดลอง</p><a class="training-link" href="/training">เปิดคู่มือและบทเรียนการใช้งาน <svg aria-hidden="true"><use href="#arrow"/></svg></a></div></div></section></main>
 <footer class="footer"><p>Smartcare Link · ระบบดูแลสุขภาพชุมชน</p><p>ต้นแบบเพื่อการศึกษา · ใช้ข้อมูลสมมติเท่านั้น · เปิดให้ทดลองโดยไม่มีระบบ Login</p></footer></div></div>
 <script>
-document.getElementById('welcome-continue').addEventListener('click',()=>{document.getElementById('welcome-gate').hidden=true;document.getElementById('site-content').hidden=false;document.getElementById('main-content').focus({preventScroll:true});window.scrollTo(0,0);document.querySelector('.hero').classList.add('reveal');document.querySelectorAll('.role').forEach(el=>el.classList.add('reveal'))});
+const siteContent = document.getElementById('site-content');
+const queueStorageKey = 'smartcare.latestQueue';
+const ticket = Object.fromEntries(['badge', 'heading', 'label', 'number', 'status', 'hint', 'link', 'caption']
+    .map(part => [part, document.getElementById('home-ticket-' + part)]));
+const exampleTicket = Object.fromEntries(Object.entries(ticket).map(([part, element]) => [part, element.textContent]));
+const queueStatusLabels = {
+    waiting: 'รอเจ้าหน้าที่เรียกคิว',
+    calling: 'ถึงคิวแล้ว',
+    in_progress: 'กำลังรับบริการ',
+    done: 'คิวนี้เสร็จสิ้นแล้ว',
+    no_show: 'เรียกคิวแล้วแต่ไม่พบตัว',
+    cancelled: 'คิวนี้ถูกยกเลิก',
+    expired: 'คิวนี้หมดวันให้บริการแล้ว'
+};
+let queueRequest;
+let shownKey;
+
+function setTicket(values, hasQueue) {
+    for (const [part, value] of Object.entries(values)) {
+        if (ticket[part].textContent !== value) ticket[part].textContent = value;
+    }
+    ticket.hint.hidden = hasQueue;
+    ticket.link.hidden = !hasQueue;
+}
+
+function readLatestQueue() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(queueStorageKey));
+        return typeof saved?.key === 'string' && /^[0-9a-f]{32}$/.test(saved.key) ? saved : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+async function refreshHomeTicket() {
+    if (siteContent.hidden || document.hidden) return;
+    const saved = readLatestQueue();
+    if (queueRequest && queueRequest.key === saved?.key) return;
+    queueRequest?.controller.abort();
+    queueRequest = null;
+    if (!saved) {
+        shownKey = null;
+        setTicket(exampleTicket, false);
+        return;
+    }
+    const details = {
+        badge: 'บัตรคิวล่าสุด',
+        heading: 'จากแบบประเมินล่าสุดในเบราว์เซอร์นี้',
+        label: saved.demo ? 'คิวจากโหมดทดลอง' : 'คิวจากการกรอกอาการ',
+        caption: 'เปิดบัตรคิวเพื่อติดตามการเรียกคิวและดูรายละเอียด'
+    };
+    if (shownKey !== saved.key) {
+        shownKey = saved.key;
+        setTicket({...details, number: '—', status: 'กำลังโหลดบัตรคิว…'}, true);
+    }
+    const request = {key: saved.key, controller: new AbortController()};
+    queueRequest = request;
+    const timeout = setTimeout(() => request.controller.abort(), 12000);
+    try {
+        const response = await fetch('/api/v1/queue/status', {
+            cache: 'no-store',
+            headers: {'X-Queue-Key': request.key},
+            signal: request.controller.signal
+        });
+        if (response.status === 404) {
+            if (queueRequest === request) setTicket({...details, number: '—', status: 'ไม่พบบัตรคิวนี้ในระบบ'}, true);
+            return;
+        }
+        if (!response.ok) throw new Error('Queue status unavailable');
+        const data = await response.json();
+        if (typeof data?.queue_number !== 'string' || !data.queue_number || !Object.hasOwn(queueStatusLabels, data.status)) {
+            throw new Error('Invalid queue status');
+        }
+        if (queueRequest === request) {
+            setTicket({...details, number: data.queue_number, status: queueStatusLabels[data.status]}, true);
+        }
+    } catch (_) {
+        if (queueRequest === request) setTicket({status: 'เช็กสถานะไม่ได้ในตอนนี้ ลองเปิดบัตรคิวอีกครั้ง'}, true);
+    } finally {
+        clearTimeout(timeout);
+        if (queueRequest === request) queueRequest = null;
+    }
+}
+
+document.getElementById('welcome-continue').addEventListener('click', () => {
+    document.getElementById('welcome-gate').hidden = true;
+    siteContent.hidden = false;
+    document.getElementById('main-content').focus({preventScroll: true});
+    window.scrollTo(0, 0);
+    document.querySelector('.hero').classList.add('reveal');
+    document.querySelectorAll('.role').forEach(el => el.classList.add('reveal'));
+    refreshHomeTicket();
+});
+window.addEventListener('pageshow', refreshHomeTicket);
+document.addEventListener('visibilitychange', refreshHomeTicket);
+window.addEventListener('storage', event => {
+    if (event.key === queueStorageKey || event.key === null) refreshHomeTicket();
+});
 </script></body></html>

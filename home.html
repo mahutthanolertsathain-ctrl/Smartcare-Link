@@ -18,6 +18,163 @@
 .sample-ticket .ticket-state[data-state="calling"]{background:#116145;color:#fff}
 .sample-ticket .ticket-state[data-state="in_progress"]{background:#dcecf8;color:#1a4e75}
 .sample-ticket:has(.ticket-state[data-state="calling"]){border-color:#26795b;background:#e6f5ec}
+
+.welcome-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: min(100%, 1000px);
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0 24px 70px #193e4517;
+    overflow: hidden;
+}
+.welcome-layout .welcome-card {
+    max-width: none;
+    align-self: center;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    animation: none;
+}
+.welcome-intro {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    padding: clamp(28px, 5vw, 58px);
+    overflow: hidden;
+    background: radial-gradient(ellipse at 0 0, #27605c 0, transparent 70%), #193e45;
+    color: #fff;
+}
+.welcome-intro::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: -150px;
+    bottom: -165px;
+    width: 440px;
+    aspect-ratio: 1;
+    border: 1px solid #b5e1d141;
+    border-radius: 50%;
+    box-shadow: 0 0 0 32px #b5e1d11c, 0 0 0 65px #b5e1d113, 0 0 0 99px #b5e1d10a;
+    animation: intro-orbit 1.8s var(--ease) both;
+}
+.intro-emblem {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 20px;
+    border: 1px solid #9ad5c187;
+    border-radius: 19px;
+    background: #9ad5c126;
+    color: #d6f6e9;
+    animation: enter .55s var(--ease) both;
+}
+.intro-emblem svg {
+    width: 30px;
+    height: 30px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.intro-title {
+    font-size: clamp(32px, 4.7vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.045em;
+    animation: enter .6s .2s var(--ease) both;
+}
+.intro-reading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    color: #c3e8db;
+    font-size: clamp(17px, 2.5vw, 23px);
+    animation: enter .45s .58s var(--ease) both;
+}
+.intro-wave {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+}
+.intro-wave span {
+    width: 2px;
+    height: 13px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: scaleY(.55);
+    animation: intro-wave .52s .7s ease-in-out 2 both;
+}
+.intro-wave span:nth-child(2) { animation-delay: .82s; height: 19px; }
+.intro-wave span:nth-child(3) { animation-delay: .94s; }
+.welcome-intro[data-speaking] .intro-wave span { animation: intro-wave .52s ease-in-out infinite; }
+.welcome-intro[data-speaking] .intro-wave span:nth-child(2) { animation-delay: .12s; }
+.welcome-intro[data-speaking] .intro-wave span:nth-child(3) { animation-delay: .24s; }
+.intro-credit {
+    width: 100%;
+    margin-top: 24px;
+    padding-top: 17px;
+    border-top: 1px solid #b5e1d154;
+    color: #c3e8db;
+    font-size: 13px;
+    animation: enter .55s 1.65s var(--ease) both;
+}
+.intro-credit strong {
+    display: block;
+    margin-top: 3px;
+    color: #fff;
+    font-size: clamp(17px, 2.4vw, 22px);
+    font-weight: 700;
+}
+.welcome-intro[data-speaking] .intro-credit { visibility: hidden; }
+.intro-credit.is-replayed { animation: intro-credit-in .55s var(--ease) both; }
+.intro-listen {
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 4px 12px;
+    border: 1px solid #b5e1d16b;
+    border-radius: 9px;
+    background: #ffffff0a;
+    color: #e6f8f1;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+.intro-listen:hover { background: #ffffff1d; }
+.intro-listen:disabled { cursor: wait; }
+.intro-audio-status { margin-top: 8px; color: #d5efe6; font-size: 12px; }
+.intro-audio-status:empty { display: none; }
+@keyframes intro-orbit {
+    from { opacity: 0; transform: translate(35px, 26px) scale(.88); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes intro-wave {
+    0%, 100% { transform: scaleY(.55); }
+    50% { transform: scaleY(1); }
+}
+@keyframes intro-credit-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+@media (max-width: 720px) {
+    #welcome-gate { padding: 14px; }
+    .welcome-layout { grid-template-columns: minmax(0, 1fr); max-width: 520px; border-radius: 24px; }
+    .welcome-intro { padding: 23px 25px 18px; }
+    .intro-emblem { width: 42px; height: 42px; margin-bottom: 13px; border-radius: 13px; }
+    .intro-emblem svg { width: 24px; height: 24px; }
+    .intro-title { font-size: clamp(30px, 8.5vw, 43px); }
+    .intro-reading { margin-top: 7px; }
+    .intro-credit { margin-top: 14px; padding-top: 10px; }
+    .intro-listen { margin-top: 8px; }
+    .welcome-layout .welcome-card { padding: 22px 25px 25px; }
+}
 </style></head><body>
 <svg aria-hidden="true" style="display:none"><defs>
 <symbol id="heart" viewBox="0 0 24 24"><path d="M20.5 4.7a5.5 5.5 0 0 0-7.8 0L12 5.4l-.7-.7a5.5 5.5 0 0 0-7.8 7.8L12 21l8.5-8.5a5.5 5.5 0 0 0 0-7.8Z"/><path d="M5 11h4l2-4 2 8 2-4h4"/></symbol>
@@ -27,11 +184,22 @@
 <symbol id="ambulance" viewBox="0 0 24 24"><path d="M3 17H1V5h13v12H8m6 0h2m5 0h2v-6l-4-4h-5M5 8h5M7.5 5.5v5M18 9v3h5"/><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/></symbol>
 <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
 </defs></svg>
-<section id="welcome-gate" aria-labelledby="welcome-title"><div class="welcome-card">
-<div class="brand"><span class="brand-mark"><svg><use href="#heart"/></svg></span>Smartcare Link</div>
-<p class="eyebrow">A COMMUNITY HEALTH PROTOTYPE</p><h1 id="welcome-title">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
+<section id="welcome-gate" aria-labelledby="welcome-title"><div class="welcome-layout">
+<div class="welcome-intro" id="welcome-intro">
+    <span class="intro-emblem" aria-hidden="true"><svg><use href="#heart"/></svg></span>
+    <p class="intro-title" lang="en">smartcare-link</p>
+    <p class="intro-reading">
+        <span class="intro-wave" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span id="intro-pronunciation">สมาร์ตแคร์ ลิงก์</span>
+    </p>
+    <p class="intro-credit" id="intro-credit" lang="en">Developed by <strong>Mahatthano Lertsathian</strong></p>
+    <button class="intro-listen" id="intro-listen" type="button" hidden>ฟังคำอ่านชื่อเว็บ</button>
+    <p class="intro-audio-status" id="intro-audio-status" role="status"></p>
+</div>
+<div class="welcome-card">
+<h1 id="welcome-title">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
 <p class="welcome-copy">Smartcare Link ยังเป็นเว็บต้นแบบสำหรับสาธิต บางช่วงอาจตอบสนองช้าเพราะโฮสต์ที่ใช้มีทรัพยากรจำกัด และบางฟังก์ชันต้องเชื่อมต่อบริการภายนอก 🙏</p><section class="welcome-purpose" aria-labelledby="purpose-title"><h2 id="purpose-title">จุดประสงค์ของโครงการ</h2><p>เว็บนี้จัดทำขึ้นเพื่อศึกษาและสาธิตแนวคิดการใช้เทคโนโลยีช่วยประสานงานดูแลสุขภาพชุมชน เชื่อมการทำงานระหว่างผู้ป่วย/ญาติ อสม. รพ.สต./รพช. และเทศบาล ตั้งแต่การคัดกรองอาการ การติดตามสุขภาพ ไปจนถึงการแจ้งเหตุและประสานความช่วยเหลือ เพื่อเรียนรู้การพัฒนาเว็บและการออกแบบระบบที่ตอบโจทย์ผู้ใช้จริง</p></section>
-<button class="button primary welcome-button" id="welcome-continue" type="button">อ่านแล้ว เริ่มสำรวจเว็บไซต์ <svg aria-hidden="true"><use href="#arrow"/></svg></button></div></section>
+<button class="button primary welcome-button" id="welcome-continue" type="button">อ่านแล้ว เริ่มสำรวจเว็บไซต์ <svg aria-hidden="true"><use href="#arrow"/></svg></button></div></div></section>
 <div id="site-content" hidden><div class="container">
 <header class="topbar"><a class="brand" href="/" aria-label="Smartcare Link หน้าแรก"><span class="brand-mark"><svg aria-hidden="true"><use href="#heart"/></svg></span>Smartcare Link</a><nav class="topnav" aria-label="เมนูหลัก"><a class="nav-screening" href="/screening">ประเมินอาการ / รับคิว</a><a href="#roles">เลือกหน่วยงาน</a><a href="#about">เกี่ยวกับโครงการ</a><span class="demo"><span class="dot"></span>เว็บต้นแบบสาธิต</span></nav></header>
 <main id="main-content" tabindex="-1"><section class="hero"><div>
@@ -73,6 +241,66 @@
 <section class="section" id="about"><div class="purpose-band"><div><p class="eyebrow">BUILT TO LEARN. DESIGNED TO CARE.</p><h2>ต้นแบบเล็ก ๆ<br>จากความตั้งใจเรียนรู้</h2></div><div><p>Smartcare Link จัดทำขึ้นเพื่อศึกษาและสาธิตว่าการพัฒนาเว็บและฐานข้อมูลสามารถช่วยเชื่อมการดูแลสุขภาพชุมชนได้อย่างไร ตั้งแต่การคัดกรอง การติดตามสุขภาพ ไปจนถึงการประสานความช่วยเหลือ โดยใช้ข้อมูลสมมติในการทดลอง</p><a class="training-link" href="/training">เปิดคู่มือและบทเรียนการใช้งาน <svg aria-hidden="true"><use href="#arrow"/></svg></a></div></div></section></main>
 <footer class="footer"><p>Smartcare Link · ระบบดูแลสุขภาพชุมชน</p><p>ต้นแบบเพื่อการศึกษา · ใช้ข้อมูลสมมติเท่านั้น · เปิดให้ทดลองโดยไม่มีระบบ Login</p></footer></div></div>
 <script>
+const introPanel = document.getElementById('welcome-intro');
+const introListen = document.getElementById('intro-listen');
+const introCredit = document.getElementById('intro-credit');
+const introAudioStatus = document.getElementById('intro-audio-status');
+const speech = window.speechSynthesis;
+let introUtterance;
+let introSpeechTimeout;
+
+function finishIntroSpeech(message = '') {
+    if (!introUtterance) return;
+    introUtterance = null;
+    clearTimeout(introSpeechTimeout);
+    introPanel.removeAttribute('data-speaking');
+    introCredit.classList.add('is-replayed');
+    introListen.disabled = false;
+    introAudioStatus.textContent = message;
+}
+
+function stopIntroSpeech() {
+    if (!introUtterance) return;
+    finishIntroSpeech();
+    speech.cancel();
+}
+
+if (speech && 'SpeechSynthesisUtterance' in window) {
+    introListen.hidden = false;
+    introListen.addEventListener('click', () => {
+        if (introUtterance) return;
+        const unavailable = 'เบราว์เซอร์นี้เล่นเสียงอ่านภาษาไทยไม่ได้';
+        const pronunciation = document.getElementById('intro-pronunciation').textContent;
+        const utterance = new SpeechSynthesisUtterance(pronunciation);
+        utterance.lang = 'th-TH';
+        utterance.rate = 0.9;
+        const thaiVoice = speech.getVoices().find(voice => /^th(?:[-_]|$)/i.test(voice.lang));
+        if (thaiVoice) utterance.voice = thaiVoice;
+
+        introUtterance = utterance;
+        introPanel.setAttribute('data-speaking', '');
+        introCredit.classList.remove('is-replayed');
+        introListen.disabled = true;
+        introAudioStatus.textContent = '';
+        utterance.onend = () => {
+            if (introUtterance === utterance) finishIntroSpeech();
+        };
+        utterance.onerror = () => {
+            if (introUtterance === utterance) finishIntroSpeech(unavailable);
+        };
+        introSpeechTimeout = setTimeout(() => {
+            finishIntroSpeech(unavailable);
+            speech.cancel();
+        }, 7000);
+        try {
+            speech.speak(utterance);
+        } catch (_) {
+            finishIntroSpeech(unavailable);
+        }
+    });
+    window.addEventListener('pagehide', stopIntroSpeech);
+}
+
 const siteContent = document.getElementById('site-content');
 const queueStorageKey = 'smartcare.latestQueue';
 const ticket = Object.fromEntries(['badge', 'heading', 'label', 'number', 'status', 'hint', 'link', 'caption']
@@ -172,6 +400,7 @@ async function refreshHomeTicket() {
 }
 
 document.getElementById('welcome-continue').addEventListener('click', () => {
+    stopIntroSpeech();
     document.getElementById('welcome-gate').hidden = true;
     siteContent.hidden = false;
     document.getElementById('main-content').focus({preventScroll: true});

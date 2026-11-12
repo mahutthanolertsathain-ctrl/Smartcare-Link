@@ -112,6 +112,46 @@
     from { opacity: 0; transform: scale(.75); }
     to { opacity: 1; transform: none; }
 }
+#welcome-notice {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    background: radial-gradient(ellipse at top, #e1efe7, transparent 70%);
+}
+.notice-card {
+    width: min(100%, 580px);
+    padding: clamp(22px, 5vw, 38px);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 24px 70px #193e4517;
+    animation: enter .45s var(--ease) both;
+}
+.notice-card h1 {
+    font-size: clamp(22px, 4.5vw, 27px);
+    line-height: 1.4;
+}
+.notice-copy {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 14px;
+}
+.notice-purpose {
+    margin-top: 20px;
+    padding: 17px 19px;
+    border-radius: 16px;
+    background: #f0f6f2;
+}
+.notice-purpose h2 { margin-bottom: 6px; font-size: 16px; }
+.notice-purpose p { color: #4b6861; font-size: 14px; }
+.notice-continue {
+    width: 100%;
+    margin-top: 20px;
+    font-family: inherit;
+    cursor: pointer;
+}
 .project-note {
     margin-top: 16px;
     padding: 14px 16px;
@@ -133,7 +173,18 @@
         <span class="intro-emblem" aria-hidden="true"><svg><use href="#heart"/></svg></span>
         <h1 class="intro-title" id="welcome-title" lang="en">smartcare-link</h1>
         <p class="intro-credit" lang="en">Developed by <strong>Mahatthano Lertsathian</strong></p>
-        <button class="intro-skip" id="welcome-continue" type="button">ข้ามไปหน้าเว็บ</button>
+        <button class="intro-skip" id="skip-intro" type="button">ข้ามแอนิเมชัน</button>
+    </div>
+</section>
+<section id="welcome-notice" aria-labelledby="notice-title" hidden>
+    <div class="notice-card">
+        <h1 id="notice-title" tabindex="-1">แจ้งให้ทราบก่อนเข้าใช้งาน</h1>
+        <p class="notice-copy">Smartcare Link ยังเป็นเว็บต้นแบบสำหรับสาธิต บางช่วงอาจตอบสนองช้าเพราะโฮสต์ที่ใช้มีทรัพยากรจำกัด และบางฟังก์ชันต้องเชื่อมต่อบริการภายนอก 🙏</p>
+        <section class="notice-purpose" aria-labelledby="notice-purpose-title">
+            <h2 id="notice-purpose-title">จุดประสงค์ของโครงการ</h2>
+            <p>เว็บนี้จัดทำขึ้นเพื่อศึกษาและสาธิตแนวคิดการใช้เทคโนโลยีช่วยประสานงานดูแลสุขภาพชุมชน เชื่อมการทำงานระหว่างผู้ป่วย/ญาติ อสม. รพ.สต./รพช. และเทศบาล ตั้งแต่การคัดกรองอาการ การติดตามสุขภาพ ไปจนถึงการแจ้งเหตุและประสานความช่วยเหลือ เพื่อเรียนรู้การพัฒนาเว็บและการออกแบบระบบที่ตอบโจทย์ผู้ใช้จริง</p>
+        </section>
+        <button class="button primary notice-continue" id="welcome-continue" type="button">อ่านแล้ว เริ่มสำรวจเว็บไซต์ <svg aria-hidden="true"><use href="#arrow"/></svg></button>
     </div>
 </section>
 <div id="site-content" hidden><div class="container">
@@ -191,8 +242,8 @@
 <script>
 const siteContent = document.getElementById('site-content');
 const welcomeGate = document.getElementById('welcome-gate');
-const skipIntro = document.getElementById('welcome-continue');
-const introStorageKey = 'smartcare.introSeen';
+const welcomeNotice = document.getElementById('welcome-notice');
+const welcomeStorageKey = 'smartcare.welcomeAccepted';
 let introTimer;
 const queueStorageKey = 'smartcare.latestQueue';
 const ticket = Object.fromEntries(['badge', 'heading', 'label', 'number', 'status', 'hint', 'link', 'caption']
@@ -291,28 +342,42 @@ async function refreshHomeTicket() {
     }
 }
 
-function showHomepage({animate = false, focus = false} = {}) {
+function showHomepage(fromNotice = false) {
     if (!siteContent.hidden) return;
-    clearTimeout(introTimer);
     welcomeGate.hidden = true;
+    welcomeNotice.hidden = true;
     siteContent.hidden = false;
-    if (focus) document.getElementById('main-content').focus({preventScroll: true});
-    if (animate) document.querySelector('.hero').classList.add('reveal');
+    if (fromNotice) {
+        const target = document.getElementById(location.hash.slice(1));
+        document.getElementById('main-content').focus({preventScroll: true});
+        if (target && siteContent.contains(target)) {
+            target.scrollIntoView();
+        } else {
+            window.scrollTo(0, 0);
+            document.querySelector('.hero').classList.add('reveal');
+        }
+    }
     refreshHomeTicket();
 }
 
-function finishIntro(focus = false) {
-    try { sessionStorage.setItem(introStorageKey, '1'); } catch (_) {}
-    showHomepage({animate: true, focus: focus || document.activeElement === skipIntro});
+function showWelcomeNotice() {
+    clearTimeout(introTimer);
+    welcomeGate.hidden = true;
+    welcomeNotice.hidden = false;
+    document.getElementById('notice-title').focus({preventScroll: true});
 }
 
-let introSeen = false;
-try { introSeen = sessionStorage.getItem(introStorageKey) === '1'; } catch (_) {}
-if (introSeen || location.hash) {
+let welcomeAccepted = false;
+try { welcomeAccepted = sessionStorage.getItem(welcomeStorageKey) === '1'; } catch (_) {}
+if (welcomeAccepted) {
     showHomepage();
 } else {
-    skipIntro.addEventListener('click', () => finishIntro(true));
-    introTimer = setTimeout(finishIntro, 3200);
+    document.getElementById('skip-intro').addEventListener('click', showWelcomeNotice);
+    document.getElementById('welcome-continue').addEventListener('click', () => {
+        try { sessionStorage.setItem(welcomeStorageKey, '1'); } catch (_) {}
+        showHomepage(true);
+    });
+    introTimer = setTimeout(showWelcomeNotice, 3200);
 }
 window.addEventListener('pageshow', refreshHomeTicket);
 document.addEventListener('visibilitychange', refreshHomeTicket);
